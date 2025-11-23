@@ -1,8 +1,15 @@
-# gd (叽咕提词器)
+# Graph Mind
 
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
-gd is a modern teleprompter application built with a monorepo architecture, featuring a Next.js frontend and a Hono backend API.
+Graph Mind is a RAG (Retrieval-Augmented Generation) enhanced Knowledge Graph system that integrates structured data (Knowledge Graph) with unstructured data (LLM/RAG) to provide intelligent information retrieval and reasoning capabilities.
+
+## Features
+
+- **Knowledge Graph Management**: Visualize and query complex interconnected data relationships
+- **RAG Integration**: Hybrid search combining semantic (vector) and structural (graph) retrieval
+- **Intelligent Reasoning**: AI-powered knowledge discovery and context-aware responses
+- **Modern Architecture**: Built with TypeScript, React, and cutting-edge web technologies
 
 ## Table of Contents
 
@@ -18,43 +25,50 @@ gd is a modern teleprompter application built with a monorepo architecture, feat
 
 ## Tech Stack
 
-### Frontend (apps/web)
-- **Next.js 16** with App Router and React Server Components
-- **React 19** with React Compiler
-- **Tailwind CSS** for styling with custom UI components
-- **Jotai** for state management
-- **TanStack Query** for server state management
-- **next-intl** for internationalization
-- **Better Auth** for authentication
-- **Framer Motion** for animations
-- **TipTap** for rich text editing
+### Core Technologies
+- **Language**: TypeScript
+- **Runtime**: Node.js ^24
+- **Package Manager**: pnpm workspace
+- **Monorepo Management**: Turborepo
+- **Code Quality**: Biome (linting, formatting, import organization)
+- **Git Hooks**: Lefthook
 
-### Backend (apps/backend)
-- **Hono** lightweight web framework
-- **Better Auth** for authentication
-- **Drizzle ORM** with PostgreSQL
-- **LogTape** for structured logging
-- **Anthropic SDK** and **OpenAI SDK** for AI integrations
-- **Vitest** for testing
+### Backend (`apps/backend`)
+- **Framework**: Hono (Node.js adapter)
+- **Authentication**: Better Auth
+- **Database (Relational)**: PostgreSQL with Drizzle ORM
+- **Database (Graph)**: Neo4j (Planned)
+- **Cache/KV Store**: Redis
+- **AI/RAG**: Vercel AI SDK (`ai`)
+- **Validation**: Zod
+- **Logging**: Logtape
+- **Testing**: Vitest
 
-### Shared Infrastructure
-- **Turborepo** for build orchestration and caching
-- **pnpm** workspace (v10.20.0) for monorepo management
-- **Biome** for formatting, linting, and import organization
-- **Lefthook** for git hooks
-- **TypeScript 5.9** for type safety
+### Frontend (`apps/web`)
+- **Framework**: React 19
+- **Build Tool**: Vite
+- **Routing**: TanStack Router
+- **Data Fetching**: TanStack Query
+- **Forms**: TanStack Form
+- **Styling**: Tailwind CSS v4
+- **Testing**: Vitest, React Testing Library
+
+### Shared Packages (`packages/`)
+- **Utilities**: `es-toolkit`, `date-fns`
+- **HTTP Client**: Ky (via `@gd/ky`)
+- **Schema/Validation**: Zod (via `@gd/shared`)
 
 ## Project Structure
 
 ```
-gd/
+graph-mind/
 ├── apps/
-│   ├── web/              # Next.js frontend application
-│   └── backend/          # Hono API server
+│   ├── web/              # React frontend application (Vite + TanStack)
+│   └── backend/          # Hono API server with auth and database
 ├── packages/
 │   ├── shared/           # Shared types, schemas, and validation
-│   ├── ky/               # HTTP client wrappers (fetch/ky)
-│   └── ui/               # Shared UI components
+│   └── ky/               # HTTP client wrappers (Ky)
+├── openspec/             # OpenSpec configuration and agents
 ├── Justfile              # Just command runner (recommended)
 ├── Makefile              # GNU Make alternative
 └── compose.yml           # Docker Compose for services
@@ -62,9 +76,9 @@ gd/
 
 ## Prerequisites
 
-- **Node.js** 24.11.0 (or compatible with `^24`)
-- **pnpm** 10.20.0 or higher
-- **Docker** and **Docker Compose** (for PostgreSQL and containerization)
+- **Node.js** 24 or higher (compatible with `^24`)
+- **pnpm** 10.23.0 or higher
+- **Docker** and **Docker Compose** (for PostgreSQL, Redis, and Neo4j services)
 - **Just** (recommended) or **Make** for running commands
 
 ### Installing Just
@@ -126,7 +140,7 @@ CORS_ALLOWED_ORIGINS="http://localhost:10000"
 
 **Frontend (`apps/web/.env`):**
 ```env
-NEXT_PUBLIC_API_BASE_URL="http://localhost:10001"
+VITE_API_BASE_URL="http://localhost:10001"
 ```
 
 #### 3. Start Services
@@ -252,23 +266,23 @@ just reset            # Reset everything: clean data and dependencies
 
 #### When modifying database schema:
 
-1. Edit schema files in `packages/shared/src/schema/` or auth tables
-2. Run `just db-generate` to create migrations
+1. Edit schema files in `packages/shared/src/` (schemas, tables)
+2. Run `just db-generate` to create migrations with Drizzle
 3. Run `just db-migrate` to apply migrations
 4. Verify changes in the database
 
 #### When adding new API routes:
 
 1. Create a new module in `apps/backend/src/modules/`
-2. Define routes with Hono and validation
+2. Define routes with Hono and Zod validation
 3. Export the router
 4. Mount it in `apps/backend/src/app.ts`
 
 #### When adding shared code:
 
 - **Types/Schemas**: Add to `packages/shared/`
-- **UI Components**: Add to `packages/ui/`
 - **HTTP Utilities**: Add to `packages/ky/`
+- **Validation**: Update shared schemas in `packages/shared/src/validate/`
 
 #### Git Hooks
 
@@ -308,11 +322,11 @@ just docker-logs-web
 ### Docker Features
 
 - Multi-stage builds for minimal image size
-- Alpine Linux base (Node.js 24.11.0-alpine)
+- Alpine Linux base (Node.js 24-alpine)
 - Non-root user for security
-- Next.js standalone output mode
 - Optimized layer caching
 - `.dockerignore` for reduced build context
+- Separate builds for frontend (Vite) and backend (Hono)
 
 ### Production Deployment
 
@@ -348,7 +362,7 @@ See `.env.template` files in each app directory for complete configuration optio
 - `TZ` - Timezone (e.g., "America/Los_Angeles")
 
 **Key Frontend Variables:**
-- `NEXT_PUBLIC_API_BASE_URL` - Backend API URL
+- `VITE_API_BASE_URL` - Backend API URL
 
 ### Biome Configuration
 
@@ -365,36 +379,49 @@ Located in `biome.json` at the root:
 Located in `turbo.json`:
 - Build caching enabled
 - Dependency-based task orchestration
-- Outputs: `.next/**`, `dist/**`
+- Outputs: `dist/**` (backend), `dist/**` (web)
 - Persistent dev tasks
+- Environment-based caching
 
 ## Contributing
 
 ### Code Style
 
-- Use TypeScript for all new code
+- Use TypeScript for all new code with strict type checking
 - Follow Biome formatting rules (runs on save and pre-commit)
-- Write meaningful commit messages
+- Use conventional commits (feat:, fix:, docs:, etc.)
 - Keep functions small and focused
+- Prefer composition over inheritance
+
+### Architecture Guidelines
+
+- **Backend**: Follow modular/layered architecture with domain-specific modules
+- **Frontend**: Use file-based routing with TanStack Router and atomic design principles
+- **Shared Code**: Place reusable types, schemas, and utilities in `packages/`
+- **Database**: Use Drizzle migrations for all schema changes
 
 ### Testing
 
 ```bash
+# Run all tests
+just test
+
 # Run tests with watch mode
 cd apps/backend
 pnpm test
 
-# Run tests with UI
+# Run tests with UI (if configured)
 pnpm test:ui
 ```
 
 ### Pull Requests
 
 1. Create a feature branch from `main`
-2. Make your changes
+2. Make your changes following the architecture guidelines
 3. Ensure `just check` and `just test` pass
-4. Commit with clear messages
-5. Push and open a PR
+4. Update documentation if needed
+5. Commit with conventional commit messages
+6. Push and open a PR with clear description
 
 ### Project Commands
 
@@ -404,7 +431,24 @@ All commands should be run from the project root using `just` (recommended) or `
 
 ## License
 
-[Add your license here]
+MIT License - see LICENSE file for details.
+
+## Architecture Overview
+
+Graph Mind follows a hybrid architecture combining:
+
+- **Knowledge Graph**: Nodes represent entities (Person, Concept, Document), edges represent relationships (AUTHOR_OF, RELATED_TO)
+- **RAG System**: Hybrid search strategy combining Vector Search (semantic) and Graph Traversal (structural)
+- **Context Management**: Efficient context window management for LLMs with embedding generation
+
+## Roadmap
+
+- [ ] Neo4j integration for graph database functionality
+- [ ] Vector database integration for semantic search
+- [ ] AI-powered knowledge extraction and linking
+- [ ] Interactive graph visualization interface
+- [ ] Advanced query interface with natural language
+- [ ] Real-time collaboration features
 
 ## Support
 
