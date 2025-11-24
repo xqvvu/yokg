@@ -156,10 +156,6 @@ just backend-auth-secret
 just db-generate
 just db-migrate
 
-# Seed initial data (optional)
-just db-seed
-```
-
 #### 4. Start Development
 
 ```bash
@@ -208,7 +204,6 @@ just test             # Run tests
 ```bash
 just db-generate      # Generate database schema and migrations
 just db-migrate       # Apply database migrations
-just db-seed          # Seed database with templates
 ```
 
 #### Docker Compose
@@ -245,7 +240,6 @@ just docker-clean            # Remove all gd containers/images
 just backend-auth-secret          # Generate better-auth secret
 just backend-drizzle-generate     # Generate drizzle migrations
 just backend-drizzle-migrate      # Run drizzle migrations
-just backend-seed-templates       # Seed template data
 just backend-start                # Start in production mode
 ```
 
@@ -258,7 +252,7 @@ just web-start        # Start in production mode
 #### Workflows
 
 ```bash
-just setup            # Complete setup: install, start services, migrate, seed
+just setup            # Complete setup: install, start services, migrate
 just reset            # Reset everything: clean data and dependencies
 ```
 

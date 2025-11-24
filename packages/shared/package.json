@@ -20,6 +20,6 @@
     "es-toolkit": "^1.42.0",
     "uuid": "^13.0.0",
     "vite-tsconfig-paths": "catalog:",
-    "zod": "^4.1.12"
+    "zod": "^4.1.13"
   }
 }
