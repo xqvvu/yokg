@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ClipboardType, Home, Menu, Network, X } from "lucide-react";
+import { ClipboardType, Home, Network, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Header() {
@@ -10,11 +10,11 @@ export default function Header() {
 			<header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
 				<button
 					aria-label="Open menu"
-					className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+					className="p-2 hover:bg-gray-700 rounded-lg transition-colors flex items-center justify-center"
 					onClick={() => setIsOpen(true)}
 					type="button"
 				>
-					<Menu size={24} />
+					<div className="icon-[meteor-icons--bars] size-6"></div>
 				</button>
 				<h1 className="ml-4 text-xl font-semibold">
 					<Link to="/">
@@ -58,8 +58,6 @@ export default function Header() {
 						<span className="font-medium">Home</span>
 					</Link>
 
-					{/* Demo Links Start */}
-
 					<Link
 						activeProps={{
 							className:
@@ -98,8 +96,6 @@ export default function Header() {
 						<ClipboardType size={20} />
 						<span className="font-medium">Address Form</span>
 					</Link>
-
-					{/* Demo Links End */}
 				</nav>
 			</aside>
 		</>

@@ -10,8 +10,8 @@
 		"check": "biome check --write ."
 	},
 	"dependencies": {
-		"@gd/shared": "workspace:*",
 		"@gd/ky": "workspace:*",
+		"@gd/shared": "workspace:*",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/react-devtools": "^0.8.1",
 		"@tanstack/react-form": "^1.25.0",
@@ -27,6 +27,8 @@
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
+		"@iconify/json": "^2.2.409",
+		"@iconify/tailwind4": "^1.1.0",
 		"@tanstack/devtools-vite": "^0.3.11",
 		"@testing-library/dom": "^10.4.1",
 		"@testing-library/react": "^16.3.0",

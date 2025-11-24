@@ -4,6 +4,7 @@
 
 docker_compose_dir := "apps/backend"
 backend_dir := "apps/backend"
+web_dir := "apps/web"
 
 # Default recipe (shows help)
 default:
@@ -22,6 +23,11 @@ dev:
 [group('development')]
 dev-backend:
     cd {{ backend_dir }} && NODE_ENV=development pnpm run dev
+
+# Start web in dev mode
+[group('development')]
+dev-web:
+    cd {{ web_dir }} && NODE_ENV=development pnpm run dev
 
 # Install dependencies
 [group('development')]
