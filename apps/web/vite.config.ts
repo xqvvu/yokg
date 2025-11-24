@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from "node:url";
+import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -12,13 +12,21 @@ export default defineConfig({
     tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
+      semicolons: true,
+      quoteStyle: "double",
+      routeToken: "layout",
+      generatedRouteTree: path.resolve(
+        import.meta.dirname,
+        "src",
+        "route-tree.gen.ts",
+      ),
     }),
     viteReact(),
     tailwindcss(),
   ],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@": path.resolve(import.meta.dirname, "src"),
     },
   },
   server: {

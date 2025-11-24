@@ -79,6 +79,43 @@ services:
       timeout: 5s
       retries: 10
 
+  milvus:
+    image: milvusdb/milvus:v2.6.6
+    ports:
+      - 19530:19530
+      - 9091:9091
+      - 2379:2379
+    environment:
+      ETCD_USE_EMBED: true
+      ETCD_DATA_DIR: /var/lib/milvus/etcd
+      ETCD_CONFIG_PATH: /milvus/configs/embedEtcd.yaml
+      COMMON_STORAGETYPE: local
+      DEPLOY_MODE: STANDALONE
+    volumes:
+      - ./.docker/milvus/milvus:/var/lib/milvus
+      - ./.docker/milvus/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml
+      - ./.docker/milvus/user.yaml:/milvus/configs/user.yaml
+    command: ['milvus', 'run', 'standalone']
+    networks:
+      - gd
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9091/healthz']
+      interval: 30s
+      timeout: 20s
+      start_period: 90s
+      retries: 3
+
+  attu:
+    image: zilliz/attu:v2.6
+    ports:
+      - 9092:3000
+    environment:
+      MILVUS_URL: milvus:19530
+    networks:
+      - gd
+    depends_on:
+      - milvus
+
 networks:
   gd:
     driver: bridge

@@ -1,6 +1,11 @@
 import { cn } from "@/lib/utils";
 
 type Props = {
+  /**
+   * Iconify design format
+   * @see https://icon-sets.iconify.design/
+   * @example icon="icon-[solar--chat-round-like-outline]"
+   */
   icon: `icon-[${string}--${string}]`;
 } & React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Icon } from "@/components/icon";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -7,13 +8,18 @@ export const Route = createFileRoute("/")({
 
 function App() {
   return (
-    <div>
-      <button type="button">
+    <div className="flex justify-center py-5 gap-4 items-center">
+      <Button
+        className="cursor-pointer"
+        size="icon-sm"
+      >
         <Icon
-          className="size-7 cursor-pointer"
-          icon="icon-[devicon--bun]"
+          className="size-5"
+          icon="icon-[solar--chat-round-like-outline]"
         />
-      </button>
+      </Button>
+
+      <div className="bg-sky-200 size-40 rounded-[100px] corner-squircle" />
     </div>
   );
 }
