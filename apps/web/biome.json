@@ -1,40 +1,44 @@
 {
-	"root": false,
-	"$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
-	"extends": "//",
-	"files": {
-		"ignoreUnknown": false,
-		"includes": ["**", "!**/src/routeTree.gen.ts"]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"assist": {
-		"actions": {
-			"source": {
-				"organizeImports": "on",
-				"useSortedAttributes": "on",
-				"useSortedProperties": "on"
-			}
-		}
-	},
-	"linter": {
-		"rules": {
-			"style": {
-				"useComponentExportOnlyModules": "off"
-			}
-		},
-		"domains": {
-			"react": "all"
-		}
-	},
-	"css": {
-		"formatter": {
-			"enabled": true
-		},
-		"parser": {
-			"tailwindDirectives": true
-		}
-	}
+  "root": false,
+  "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
+  "extends": "//",
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["**", "!**/src/routeTree.gen.ts"]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on",
+        "useSortedAttributes": "on",
+        "useSortedProperties": "on"
+      }
+    }
+  },
+  "linter": {
+    "domains": {
+      "react": "all"
+    },
+    "rules": {
+      "style": {
+        "useSelfClosingElements": "on",
+        "useComponentExportOnlyModules": "off"
+      },
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      },
+      "nursery": {
+        "useConsistentArrowReturn": "off",
+        "noReactForwardRef": "error"
+      }
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": true
+    },
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
 }

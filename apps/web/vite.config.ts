@@ -7,18 +7,21 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [
-		devtools(),
-		tanstackRouter({
-			target: "react",
-			autoCodeSplitting: true,
-		}),
-		viteReact(),
-		tailwindcss(),
-	],
-	resolve: {
-		alias: {
-			"@": fileURLToPath(new URL("./src", import.meta.url)),
-		},
-	},
+  plugins: [
+    devtools(),
+    tanstackRouter({
+      target: "react",
+      autoCodeSplitting: true,
+    }),
+    viteReact(),
+    tailwindcss(),
+  ],
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+  server: {
+    port: 10000,
+  },
 });

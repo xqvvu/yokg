@@ -4,6 +4,7 @@
 # Variables
 DOCKER_COMPOSE_DIR := apps/backend
 BACKEND_DIR := apps/backend
+WEB_DIR := apps/web
 
 # Use bash for shell
 SHELL := /bin/bash
@@ -24,6 +25,9 @@ dev: ## Start development servers
 
 dev-backend: ## Start backend in dev mode
 	cd $(BACKEND_DIR) && NODE_ENV=development pnpm run dev
+
+dev-web:
+	cd $(WEB_DIR) && NODE_ENV=development pnpm run dev
 
 install: ## Install dependencies
 	pnpm install
