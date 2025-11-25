@@ -27,10 +27,8 @@ function prepare() {
 }
 
 export class Config {
-  // Public only for testing use
   constructor(private readonly env: ConfigInit = prepare()) {}
 
-  // biome-ignore lint/correctness/noUnusedPrivateClassMembers: Singleton
   static #instance: Config | null = null;
   static getInstance() {
     if (isNil(Config.#instance)) {

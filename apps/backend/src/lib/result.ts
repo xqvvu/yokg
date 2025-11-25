@@ -1,6 +1,6 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Result } from "@graph-mind/shared/types/result";
-import { isNil } from "es-toolkit";
+import { isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
 import { SystemException } from "@/exceptions/system-exception";
 
@@ -99,32 +99,9 @@ export async function cloneAndFormatJSONResponse(
 
 export function appendHeaders(headers: Headers, appendHeaders?: HeadersInit) {
   const h = new Headers(headers);
-  if (isNil(appendHeaders)) return h;
-
-  if (Array.isArray(appendHeaders)) {
-    for (const [key, value] of appendHeaders) {
-      h.append(key, value);
-    }
-    return h;
+  if (isNotNil(appendHeaders)) {
+    const ah = new Headers(appendHeaders);
+    ah.forEach((v, k) => void h.append(k, v));
   }
-
-  if (appendHeaders instanceof Headers) {
-    for (const [key, value] of appendHeaders.entries()) {
-      h.append(key, value);
-    }
-    return h;
-  }
-
-  if (typeof appendHeaders === "object") {
-    for (const [key, value] of Object.entries(appendHeaders)) {
-      h.append(key, value);
-    }
-    return h;
-  }
-
-  throw new SystemException({
-    errcode: ErrorCode.INTERNAL_ERROR,
-    message:
-      "TypeError that `appendHeaders` is not compatible with its definition",
-  });
+  return h;
 }
