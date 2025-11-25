@@ -1,6 +1,6 @@
 import type { Mocked } from "vitest";
 import { vi } from "vitest";
-import type { IUserRepository } from "@/modules/users/users.repository.interface";
+import type { IUserRepository } from "@/repositories/users.repository.interface";
 
 export function createMockedUserRepository(): Mocked<IUserRepository> {
   return {

@@ -3,8 +3,8 @@ import type { IUser } from "@graph-mind/shared/validate/users";
 import { isNil, isNotNil } from "es-toolkit";
 import { BusinessException } from "@/exceptions/business-exception";
 import { getLogger, mod } from "@/infra/logger";
-import { getUserRepository } from "@/modules/users/users.repository";
-import type { IUserRepository } from "@/modules/users/users.repository.interface";
+import { getUserRepository } from "@/repositories/users.repository";
+import type { IUserRepository } from "@/repositories/users.repository.interface";
 
 export class UserService {
   constructor(private userRepository: IUserRepository) {}

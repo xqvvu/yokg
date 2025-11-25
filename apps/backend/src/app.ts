@@ -15,6 +15,7 @@ import { injectSession } from "@/middlewares/inject-session";
 import { logger } from "@/middlewares/logger";
 import { requireAuth } from "@/middlewares/require-auth";
 import { auth } from "@/modules/auth/auth.route";
+import { llm } from "@/modules/llm/llm.route";
 import { users } from "@/modules/users/users.route";
 
 type App = Readonly<Hono<Env>>;
@@ -34,14 +35,15 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
   );
   app.use("*", logger);
   app.use("*", requestId());
-  app.use("*", injectSession); // TODO: performance: optimize this middleware to avoid unnecessary database queries
-  app.use("*", requireAuth);
+  // app.use("*", injectSession); // TODO: performance: optimize this middleware to avoid unnecessary database queries
+  // app.use("*", requireAuth);
   app.use("*", compress());
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------routes----------------------------//
   app.route("/api", auth);
   app.route("/api", users);
+  app.route("/api", llm);
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------event handlers--------------------//

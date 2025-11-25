@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { mockUsers, mockUserWithId } from "#test/fixtures/users.fixture";
 import { createMockedUserRepository } from "#test/mocks/users.repository.mock";
 import { BusinessException } from "@/exceptions/business-exception";
-import type { IUserRepository } from "@/modules/users/users.repository.interface";
 import { UserService } from "@/modules/users/users.service";
+import type { IUserRepository } from "@/repositories/users.repository.interface";
 
 describe("UserService", () => {
   let userRepository: Mocked<IUserRepository>;

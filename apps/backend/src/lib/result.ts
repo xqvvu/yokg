@@ -1,3 +1,4 @@
+import { createServerKy } from "@graph-mind/ky/server";
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Result } from "@graph-mind/shared/types/result";
 import { isNil, isNotNil } from "es-toolkit";
@@ -105,3 +106,5 @@ export function appendHeaders(headers: Headers, appendHeaders?: HeadersInit) {
   }
   return h;
 }
+
+export const ky = createServerKy();
