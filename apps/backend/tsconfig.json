@@ -15,8 +15,8 @@
     "paths": {
       "@/*": ["src/*"],
 
-      "@gd/shared/*": ["../../packages/shared/src/*"],
-      "@gd/ky/*": ["../../packages/ky/src/*"],
+      "@graph-mind/shared/*": ["../../packages/shared/src/*"],
+      "@graph-mind/ky/*": ["../../packages/ky/src/*"],
 
       "#test/*": ["test/*"]
     }

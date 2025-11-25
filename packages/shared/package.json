@@ -1,5 +1,5 @@
 {
-  "name": "@gd/shared",
+  "name": "@graph-mind/shared",
   "type": "module",
   "exports": {
     "./*": "./src/*.ts"

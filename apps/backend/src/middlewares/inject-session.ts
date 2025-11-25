@@ -1,5 +1,5 @@
-import type { ISession } from "@gd/shared/validate/session";
-import type { IUser } from "@gd/shared/validate/users";
+import type { ISession } from "@graph-mind/shared/validate/session";
+import type { IUser } from "@graph-mind/shared/validate/users";
 import { isNil } from "es-toolkit";
 import { createMiddleware } from "hono/factory";
 import { getLogger, middleware } from "@/infra/logger";

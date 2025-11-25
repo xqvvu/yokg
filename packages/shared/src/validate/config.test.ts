@@ -1,4 +1,4 @@
-import { ConfigSchema } from "@gd/shared/validate/config";
+import { ConfigSchema } from "@graph-mind/shared/validate/config";
 import { clone, omit } from "es-toolkit";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ZodError } from "zod";

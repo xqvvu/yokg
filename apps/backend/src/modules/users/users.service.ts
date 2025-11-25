@@ -1,5 +1,5 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
-import type { IUser } from "@gd/shared/validate/users";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import type { IUser } from "@graph-mind/shared/validate/users";
 import { isNil, isNotNil } from "es-toolkit";
 import { BusinessException } from "@/exceptions/business-exception";
 import { getLogger, mod } from "@/infra/logger";

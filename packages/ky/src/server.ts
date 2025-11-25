@@ -1,4 +1,4 @@
-import { DEFAULT_PREFIX_URL, TIMEOUT } from "@gd/ky/constants";
+import { DEFAULT_PREFIX_URL, TIMEOUT } from "@graph-mind/ky/constants";
 import type { KyInstance } from "ky";
 import ky from "ky";
 

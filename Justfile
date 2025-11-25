@@ -1,4 +1,4 @@
-# Justfile for gd project
+# Justfile for graph-mind project
 # Run `just --list` to see all available commands
 # Variables
 
@@ -174,35 +174,35 @@ test-coverage:
 # Build backend docker image
 [group('docker')]
 docker-build-backend:
-    docker build -t gd-backend:latest {{ backend_dir }}
-    @echo "✓ Backend image built: gd-backend:latest"
+    docker build -t graph-mind-backend:latest {{ backend_dir }}
+    @echo "✓ Backend image built: graph-mind-backend:latest"
 
 # Run backend container
 [group('docker')]
 docker-run-backend:
-    docker run -d --name gd-backend -p 3000:3000 --env-file {{ backend_dir }}/.env gd-backend:latest
+    docker run -d --name graph-mind-backend -p 3000:3000 --env-file {{ backend_dir }}/.env graph-mind-backend:latest
     @echo "✓ Backend running on http://localhost:3000"
 
 # Stop backend container
 [group('docker')]
 docker-stop-backend:
-    docker stop gd-backend
-    docker rm gd-backend
+    docker stop graph-mind-backend
+    docker rm graph-mind-backend
     @echo "✓ Backend stopped"
 
 # View backend container logs
 [group('docker')]
 docker-logs-backend:
-    docker logs -f gd-backend
+    docker logs -f graph-mind-backend
 
-# Remove all gd docker images and containers
+# Remove all graph-mind docker images and containers
 [group('docker')]
 docker-clean:
     #!/usr/bin/env bash
     set -euo pipefail
-    docker ps -a | grep gd | awk '{print $1}' | xargs -r docker rm -f 2>/dev/null || true
-    docker images | grep gd | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
-    echo "✓ All gd containers and images removed"
+    docker ps -a | grep graph-mind | awk '{print $1}' | xargs -r docker rm -f 2>/dev/null || true
+    docker images | grep graph-mind | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+    echo "✓ All graph-mind containers and images removed"
 
 ##################################################
 # Database

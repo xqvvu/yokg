@@ -1,5 +1,5 @@
 /**
- * Business status code system for gd application
+ * Business status code system for graph-mind application
  *
  * Format: 5-digit number [Module 2 digits][Category 3 digits]
  *

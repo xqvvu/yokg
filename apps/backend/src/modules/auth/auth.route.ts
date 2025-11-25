@@ -1,4 +1,7 @@
-import { SignInEmailSchema, SignUpEmailSchema } from "@gd/shared/validate/auth";
+import {
+  SignInEmailSchema,
+  SignUpEmailSchema,
+} from "@graph-mind/shared/validate/auth";
 import { Hono } from "hono";
 import { cloneRawRequest } from "hono/request";
 import type { ContentfulStatusCode } from "hono/utils/http-status";

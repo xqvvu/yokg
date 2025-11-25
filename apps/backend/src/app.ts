@@ -1,4 +1,4 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";

@@ -1,5 +1,5 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
-import { schema } from "@gd/shared/schemas";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { schema } from "@graph-mind/shared/schemas";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isNil } from "es-toolkit";

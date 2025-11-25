@@ -34,8 +34,8 @@ The goal is to develop a RAG (Retrieval-Augmented Generation) enhanced Knowledge
 
 ### Shared (`packages/`)
 - **Utilities:** `es-toolkit`, `date-fns`
-- **HTTP Client:** Ky (via `@gd/ky`)
-- **Schema/Validation:** Zod (via `@gd/shared`)
+- **HTTP Client:** Ky (via `@graph-mind/ky`)
+- **Schema/Validation:** Zod (via `@graph-mind/shared`)
 
 ## Project Conventions
 

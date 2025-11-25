@@ -1,4 +1,4 @@
-import type { ErrorCodeValue } from "@gd/shared/lib/error-codes";
+import type { ErrorCodeValue } from "@graph-mind/shared/lib/error-codes";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 

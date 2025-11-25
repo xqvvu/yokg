@@ -1,7 +1,7 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
-import type { Method } from "@gd/shared/types/result";
-import type { ConfigInit } from "@gd/shared/validate/config";
-import { ConfigSchema } from "@gd/shared/validate/config";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import type { Method } from "@graph-mind/shared/types/result";
+import type { ConfigInit } from "@graph-mind/shared/validate/config";
+import { ConfigSchema } from "@graph-mind/shared/validate/config";
 import { isNil } from "es-toolkit";
 import { ZodError } from "zod";
 import { SystemException } from "@/exceptions/system-exception";

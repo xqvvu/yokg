@@ -1,6 +1,6 @@
-import { users } from "@gd/shared/schemas";
-import type { nil } from "@gd/shared/types/utils";
-import type { IUser } from "@gd/shared/validate/users";
+import { users } from "@graph-mind/shared/schemas";
+import type { nil } from "@graph-mind/shared/types/utils";
+import type { IUser } from "@graph-mind/shared/validate/users";
 import { eq } from "drizzle-orm";
 import { isNil, isNotNil } from "es-toolkit";
 import type { DB } from "@/infra/database";

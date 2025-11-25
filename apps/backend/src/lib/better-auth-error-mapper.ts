@@ -1,5 +1,5 @@
-import type { ErrorCodeValue } from "@gd/shared/lib/error-codes";
-import { ErrorCode } from "@gd/shared/lib/error-codes";
+import type { ErrorCodeValue } from "@graph-mind/shared/lib/error-codes";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { BASE_ERROR_CODES } from "better-auth";
 
 export type BetterAuthErrorCode = keyof typeof BASE_ERROR_CODES;

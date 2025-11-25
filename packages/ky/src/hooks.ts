@@ -1,4 +1,4 @@
-import type { Result } from "@gd/shared/types/result";
+import type { Result } from "@graph-mind/shared/types/result";
 import type { AfterResponseHook } from "ky";
 
 export const afterResponseDestructureResult: AfterResponseHook = async (

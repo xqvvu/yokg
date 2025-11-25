@@ -1,5 +1,5 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
-import type { Result } from "@gd/shared/types/result";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import type { Result } from "@graph-mind/shared/types/result";
 import { isNil } from "es-toolkit";
 import type { Context } from "hono";
 import { SystemException } from "@/exceptions/system-exception";

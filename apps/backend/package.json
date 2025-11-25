@@ -1,5 +1,5 @@
 {
-  "name": "@gd/backend",
+  "name": "@graph-mind/backend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,8 +13,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@gd/ky": "workspace:*",
-    "@gd/shared": "workspace:*",
+    "@graph-mind/ky": "workspace:*",
+    "@graph-mind/shared": "workspace:*",
     "@hono/node-server": "^1.19.6",
     "@hono/zod-validator": "^0.7.5",
     "@logtape/file": "^1.2.0",

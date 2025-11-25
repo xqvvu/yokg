@@ -15,7 +15,7 @@ COPY packages/shared/package.json ./packages/shared/
 COPY packages/ky/package.json ./packages/ky/
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile --filter @gd/backend...
+RUN pnpm install --frozen-lockfile --filter @graph-mind/backend...
 
 # Build the app
 FROM base AS builder

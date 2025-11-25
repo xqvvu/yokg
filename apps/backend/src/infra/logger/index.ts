@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import fs from "node:fs";
 import path from "node:path";
-import { ErrorCode } from "@gd/shared/lib/error-codes";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { getFileSink } from "@logtape/file";
 import {
   configure as configureLogTape,
@@ -103,26 +103,26 @@ export async function configure() {
 
       // Root logger
       {
-        category: ["gd"],
+        category: ["graph-mind"],
         lowestLevel: config.isDevelopmentNodeEnv ? "debug" : "info",
         sinks: ["console", "all"],
       },
 
       // HTTP layer
       {
-        category: ["gd", "http"],
+        category: ["graph-mind", "http"],
         lowestLevel: "info",
         parentSinks: "override",
         sinks: ["console", "access", "all"],
       },
       {
-        category: ["gd", "http", "warn"],
+        category: ["graph-mind", "http", "warn"],
         lowestLevel: "warning",
         parentSinks: "override",
         sinks: ["console", "access", "all"],
       },
       {
-        category: ["gd", "http", "error"],
+        category: ["graph-mind", "http", "error"],
         lowestLevel: "error",
         parentSinks: "override",
         sinks: ["console", "error", "access", "all"],
@@ -130,7 +130,7 @@ export async function configure() {
 
       // Middleware layer
       {
-        category: ["gd", "middleware"],
+        category: ["graph-mind", "middleware"],
         lowestLevel: config.isDevelopmentNodeEnv ? "debug" : "info",
         parentSinks: "override",
         sinks: ["console", "all"],
@@ -138,7 +138,7 @@ export async function configure() {
 
       // Business module layer
       {
-        category: ["gd", "module"],
+        category: ["graph-mind", "module"],
         lowestLevel: config.isDevelopmentNodeEnv ? "debug" : "info",
         parentSinks: "override",
         sinks: ["console", "all"],
@@ -146,13 +146,13 @@ export async function configure() {
 
       // Infrastructure layer
       {
-        category: ["gd", "infra", "database"],
+        category: ["graph-mind", "infra", "database"],
         lowestLevel: config.isDevelopmentNodeEnv ? "debug" : "info",
         parentSinks: "override",
         sinks: ["console", "database"],
       },
       {
-        category: ["gd", "infra", "ai"],
+        category: ["graph-mind", "infra", "ai"],
         lowestLevel: "info",
         parentSinks: "override",
         sinks: ["console", "ai", "all"],
@@ -160,7 +160,7 @@ export async function configure() {
 
       // External integrations
       {
-        category: ["gd", "external"],
+        category: ["graph-mind", "external"],
         lowestLevel: config.isDevelopmentNodeEnv ? "debug" : "info",
         parentSinks: "override",
         sinks: ["console", "all"],

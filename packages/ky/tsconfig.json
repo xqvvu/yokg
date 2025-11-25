@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@gd/ky/*": ["src/*"]
+      "@graph-mind/ky/*": ["src/*"]
     },
     "outDir": "./dist",
     "rootDir": "./src"

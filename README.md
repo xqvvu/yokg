@@ -55,8 +55,8 @@ Graph Mind is a RAG (Retrieval-Augmented Generation) enhanced Knowledge Graph sy
 
 ### Shared Packages (`packages/`)
 - **Utilities**: `es-toolkit`, `date-fns`
-- **HTTP Client**: Ky (via `@gd/ky`)
-- **Schema/Validation**: Zod (via `@gd/shared`)
+- **HTTP Client**: Ky (via `@graph-mind/ky`)
+- **Schema/Validation**: Zod (via `@graph-mind/shared`)
 
 ## Project Structure
 
@@ -103,7 +103,7 @@ cargo install just
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd gd
+cd graph-mind
 
 # Run complete setup (installs deps, starts services, migrates DB)
 just setup
@@ -132,7 +132,7 @@ Edit the environment files:
 **Backend (`apps/backend/.env`):**
 ```env
 PORT=10001
-DATABASE_URL="postgres://postgres:mypassword@localhost:5432/gd"
+DATABASE_URL="postgres://postgres:mypassword@localhost:5432/graph-mind"
 BETTER_AUTH_SECRET=<run: just backend-auth-secret>
 BETTER_AUTH_URL="http://localhost:10001"
 CORS_ALLOWED_ORIGINS="http://localhost:10000"
@@ -231,7 +231,7 @@ just docker-stop-web         # Stop web container
 just docker-logs-backend     # View backend logs
 just docker-logs-web         # View web logs
 
-just docker-clean            # Remove all gd containers/images
+just docker-clean            # Remove all graph-mind containers/images
 ```
 
 #### Backend Specific
@@ -328,10 +328,10 @@ For production, use Docker Compose or Kubernetes:
 
 ```bash
 # Example: Build and push to registry
-docker build -t your-registry/gd-backend:latest apps/backend
-docker build -t your-registry/gd-web:latest apps/web
-docker push your-registry/gd-backend:latest
-docker push your-registry/gd-web:latest
+docker build -t your-registry/graph-mind-backend:latest apps/backend
+docker build -t your-registry/graph-mind-web:latest apps/web
+docker push your-registry/graph-mind-backend:latest
+docker push your-registry/graph-mind-web:latest
 ```
 
 ## Configuration

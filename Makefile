@@ -131,26 +131,26 @@ test-coverage: ## Run tests with coverage (with auto cleanup)
 ##################################################
 
 docker-build-backend: ## Build backend docker image
-	docker build -t gd-backend:latest $(BACKEND_DIR)
-	@echo "✓ Backend image built: gd-backend:latest"
+	docker build -t graph-mind-backend:latest $(BACKEND_DIR)
+	@echo "✓ Backend image built: graph-mind-backend:latest"
 
 docker-run-backend: ## Run backend container
-	docker run -d --name gd-backend -p 3000:3000 --env-file $(BACKEND_DIR)/.env gd-backend:latest
+	docker run -d --name graph-mind-backend -p 3000:3000 --env-file $(BACKEND_DIR)/.env graph-mind-backend:latest
 	@echo "✓ Backend running on http://localhost:3000"
 
 docker-stop-backend: ## Stop backend container
-	docker stop gd-backend
-	docker rm gd-backend
+	docker stop graph-mind-backend
+	docker rm graph-mind-backend
 	@echo "✓ Backend stopped"
 
 docker-logs-backend: ## View backend container logs
-	docker logs -f gd-backend
+	docker logs -f graph-mind-backend
 
-docker-clean: ## Remove all gd docker images and containers
+docker-clean: ## Remove all graph-mind docker images and containers
 	set -euo pipefail
-	docker ps -a | grep gd | awk '{print $$1}' | xargs -r docker rm -f 2>/dev/null || true
-	docker images | grep gd | awk '{print $$3}' | xargs -r docker rmi -f 2>/dev/null || true
-	echo "✓ All gd containers and images removed"
+	docker ps -a | grep graph-mind | awk '{print $$1}' | xargs -r docker rm -f 2>/dev/null || true
+	docker images | grep graph-mind | awk '{print $$3}' | xargs -r docker rmi -f 2>/dev/null || true
+	echo "✓ All graph-mind containers and images removed"
 
 ##################################################
 # Database

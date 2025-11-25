@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@gd/shared/*": ["src/*"]
+      "@graph-mind/shared/*": ["src/*"]
     },
     "outDir": "./dist",
     "rootDir": "./src"

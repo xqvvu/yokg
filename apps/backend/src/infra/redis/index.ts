@@ -1,4 +1,4 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { isNil, isNotNil } from "es-toolkit";
 import { createClient } from "redis";
 import { SystemException } from "@/exceptions/system-exception";

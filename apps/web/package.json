@@ -1,5 +1,5 @@
 {
-  "name": "@gd/web",
+  "name": "@graph-mind/web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,8 +10,8 @@
     "check": "biome check --write ."
   },
   "dependencies": {
-    "@gd/ky": "workspace:*",
-    "@gd/shared": "workspace:*",
+    "@graph-mind/ky": "workspace:*",
+    "@graph-mind/shared": "workspace:*",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",

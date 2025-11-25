@@ -1,7 +1,7 @@
 /**
  * LogTape category definitions for hierarchical logging
  *
- * Structure: ["gd", layer, module?, feature?]
+ * Structure: ["graph-mind", layer, module?, feature?]
  *
  * Layers:
  * - http: HTTP layer (requests, responses, errors)
@@ -27,7 +27,7 @@
  * Root application logger
  * Use for application-level events
  */
-export const root = ["gd"] as const;
+export const root = ["graph-mind"] as const;
 
 // ========================================
 // HTTP Layer
@@ -38,10 +38,10 @@ export const root = ["gd"] as const;
  * Use for HTTP requests, responses, and errors
  */
 export const http = {
-  request: ["gd", "http", "request"],
-  response: ["gd", "http", "response"],
-  error: ["gd", "http", "error"],
-  warn: ["gd", "http", "warn"],
+  request: ["graph-mind", "http", "request"],
+  response: ["graph-mind", "http", "response"],
+  error: ["graph-mind", "http", "error"],
+  warn: ["graph-mind", "http", "warn"],
 } as const;
 
 // ========================================
@@ -53,9 +53,9 @@ export const http = {
  * Use for middleware operations (auth, validation, session, etc.)
  */
 export const middleware = {
-  auth: ["gd", "middleware", "auth"],
-  validation: ["gd", "middleware", "validation"],
-  session: ["gd", "middleware", "session"],
+  auth: ["graph-mind", "middleware", "auth"],
+  validation: ["graph-mind", "middleware", "validation"],
+  session: ["graph-mind", "middleware", "session"],
 } as const;
 
 // ========================================
@@ -70,15 +70,15 @@ export const middleware = {
  * ```ts
  * // Add new module
  * export const mod = {
- *   Auth: ["gd", "module", "auth"],
- *   Users: ["gd", "module", "users"],
- *   YourNewModule: ["gd", "module", "your-new-module"],
+ *   Auth: ["graph-mind", "module", "auth"],
+ *   Users: ["graph-mind", "module", "users"],
+ *   YourNewModule: ["graph-mind", "module", "your-new-module"],
  * } as const;
  * ```
  */
 export const mod = {
-  auth: ["gd", "module", "auth"],
-  users: ["gd", "module", "users"],
+  auth: ["graph-mind", "module", "auth"],
+  users: ["graph-mind", "module", "users"],
 } as const;
 
 // ========================================
@@ -90,9 +90,9 @@ export const mod = {
  * Use for database, redis, and other infrastructure operations
  */
 export const infra = {
-  database: ["gd", "infra", "database"],
-  redis: ["gd", "infra", "redis"],
-  ai: ["gd", "infra", "ai"],
+  database: ["graph-mind", "infra", "database"],
+  redis: ["graph-mind", "infra", "redis"],
+  ai: ["graph-mind", "infra", "ai"],
 } as const;
 
 // ========================================
@@ -104,7 +104,7 @@ export const infra = {
  * Use for third-party services and integrations
  */
 export const external = {
-  betterAuth: ["gd", "external", "better-auth"],
+  betterAuth: ["graph-mind", "external", "better-auth"],
 } as const;
 
 // ========================================

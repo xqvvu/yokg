@@ -1,5 +1,5 @@
-import { ErrorCode } from "@gd/shared/lib/error-codes";
-import { schema } from "@gd/shared/schemas";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { schema } from "@graph-mind/shared/schemas";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { isNil, isNotNil } from "es-toolkit";
 import { SystemException } from "@/exceptions/system-exception";

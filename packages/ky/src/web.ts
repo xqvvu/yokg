@@ -1,5 +1,5 @@
-import { DEFAULT_PREFIX_URL, TIMEOUT } from "@gd/ky/constants";
-import { afterResponseDestructureResult } from "@gd/ky/hooks";
+import { DEFAULT_PREFIX_URL, TIMEOUT } from "@graph-mind/ky/constants";
+import { afterResponseDestructureResult } from "@graph-mind/ky/hooks";
 import type { KyInstance } from "ky";
 import ky from "ky";
 
