@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from "./routes/__root";
 import { Route as GraphLayoutRouteImport } from "./routes/graph/layout";
 import { Route as IndexRouteImport } from "./routes/index";
 import { Route as GraphIndexRouteImport } from "./routes/graph/index";
+import { Route as GraphIdRouteImport } from "./routes/graph/$id";
 
 const GraphLayoutRoute = GraphLayoutRouteImport.update({
   id: "/graph",
@@ -28,28 +29,36 @@ const GraphIndexRoute = GraphIndexRouteImport.update({
   path: "/",
   getParentRoute: () => GraphLayoutRoute,
 } as any);
+const GraphIdRoute = GraphIdRouteImport.update({
+  id: "/$id",
+  path: "/$id",
+  getParentRoute: () => GraphLayoutRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/graph": typeof GraphLayoutRouteWithChildren;
+  "/graph/$id": typeof GraphIdRoute;
   "/graph/": typeof GraphIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/graph/$id": typeof GraphIdRoute;
   "/graph": typeof GraphIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/graph": typeof GraphLayoutRouteWithChildren;
+  "/graph/$id": typeof GraphIdRoute;
   "/graph/": typeof GraphIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/graph" | "/graph/";
+  fullPaths: "/" | "/graph" | "/graph/$id" | "/graph/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/graph";
-  id: "__root__" | "/" | "/graph" | "/graph/";
+  to: "/" | "/graph/$id" | "/graph";
+  id: "__root__" | "/" | "/graph" | "/graph/$id" | "/graph/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -80,14 +89,23 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof GraphIndexRouteImport;
       parentRoute: typeof GraphLayoutRoute;
     };
+    "/graph/$id": {
+      id: "/graph/$id";
+      path: "/$id";
+      fullPath: "/graph/$id";
+      preLoaderRoute: typeof GraphIdRouteImport;
+      parentRoute: typeof GraphLayoutRoute;
+    };
   }
 }
 
 interface GraphLayoutRouteChildren {
+  GraphIdRoute: typeof GraphIdRoute;
   GraphIndexRoute: typeof GraphIndexRoute;
 }
 
 const GraphLayoutRouteChildren: GraphLayoutRouteChildren = {
+  GraphIdRoute: GraphIdRoute,
   GraphIndexRoute: GraphIndexRoute,
 };
 

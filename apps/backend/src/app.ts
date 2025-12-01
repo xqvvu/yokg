@@ -10,10 +10,8 @@ import { BusinessException } from "@/exceptions/business-exception";
 import { SystemException } from "@/exceptions/system-exception";
 import type { Config } from "@/lib/config";
 import { getConfig } from "@/lib/config";
-import { R } from "@/lib/result";
-import { injectSession } from "@/middlewares/inject-session";
+import { R } from "@/lib/http";
 import { logger } from "@/middlewares/logger";
-import { requireAuth } from "@/middlewares/require-auth";
 import { auth } from "@/modules/auth/auth.route";
 import { llm } from "@/modules/llm/llm.route";
 import { users } from "@/modules/users/users.route";
@@ -35,7 +33,7 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
   );
   app.use("*", logger);
   app.use("*", requestId());
-  // app.use("*", injectSession); // TODO: performance: optimize this middleware to avoid unnecessary database queries
+  // app.use("*", injectSession);
   // app.use("*", requireAuth);
   app.use("*", compress());
   // #endregion ----------------------------------------------------//

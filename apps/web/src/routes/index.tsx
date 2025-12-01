@@ -6,6 +6,7 @@ export const Route = createFileRoute("/")({
   component: App,
 });
 
+// TODO: complete this page
 function App() {
   return (
     <div className="flex justify-center py-5 gap-4 items-center">

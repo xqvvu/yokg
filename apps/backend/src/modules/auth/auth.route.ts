@@ -9,7 +9,7 @@ import { BusinessException } from "@/exceptions/business-exception";
 import { getLogger, mod } from "@/infra/logger";
 import { getBetterAuth } from "@/lib/auth";
 import { mapBetterAuthError } from "@/lib/better-auth-error-mapper";
-import { cloneAndFormatJSONResponse } from "@/lib/result";
+import { cloneAndFormatJSONResponse } from "@/lib/http";
 import { validator } from "@/middlewares/validator";
 
 export const auth = new Hono<Env>().basePath("/auth");

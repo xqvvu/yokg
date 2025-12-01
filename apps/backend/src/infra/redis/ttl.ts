@@ -7,7 +7,7 @@ type Unit = "second" | "minute" | "hour" | "day" | "month" | "season" | "year";
 
 export class RedisTTLCalculator {
   raw(params: { ttl: number; unit?: Unit }): number {
-    const { ttl, unit } = params;
+    const { ttl, unit = "second" } = params;
 
     const now = new Date();
     let result: number = 0;

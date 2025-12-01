@@ -5,6 +5,7 @@ import { BusinessException } from "@/exceptions/business-exception";
 import { getLogger, middleware } from "@/infra/logger";
 
 export const requireAuth = createMiddleware<Env>(
+  // TODO: consider a better way to check if the user is authenticated
   async function requireAuthMiddleware(c, next) {
     const logger = getLogger(middleware.auth);
 

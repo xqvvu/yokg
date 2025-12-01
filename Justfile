@@ -231,15 +231,15 @@ backend-drizzle-generate:
     #!/usr/bin/env bash
     set -euo pipefail
     cd {{ backend_dir }}
-    npx @better-auth/cli@latest generate -y --config="src/lib/auth.ts" --output="../../packages/shared/src/tables/auth.ts"
+    pnpx @better-auth/cli@latest generate -y --config="src/lib/auth.ts" --output="../../packages/shared/src/tables/auth.ts"
     pnpm biome check --write "../../packages/shared/src/tables/auth.ts"
-    npx drizzle-kit generate
+    pnpm drizzle-kit generate
     echo "✓ Schema generated"
 
 # Run drizzle migrations
 [group('backend')]
 backend-drizzle-migrate:
-    cd {{ backend_dir }} && npx drizzle-kit migrate
+    cd {{ backend_dir }} && pnpm drizzle-kit migrate
     @echo "✓ Migrations applied"
 
 # Start backend in production mode

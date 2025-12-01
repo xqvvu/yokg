@@ -12,12 +12,13 @@ let auth: ReturnType<typeof betterAuth> | null = null;
 
 export async function configure() {
   if (isNil(auth)) {
+    const db = getDb();
     const config = getConfig();
     const logger = getLogger(external.betterAuth);
 
     auth = betterAuth({
       trustedOrigins: config.corsAllowedOrigins,
-      database: drizzleAdapter(getDb(), {
+      database: drizzleAdapter(db, {
         schema,
         provider: "pg",
         usePlural: true,
@@ -30,6 +31,9 @@ export async function configure() {
       },
       advanced: {
         disableOriginCheck: config.isDevelopmentNodeEnv,
+      },
+      experimental: {
+        joins: true,
       },
       emailAndPassword: {
         enabled: true,

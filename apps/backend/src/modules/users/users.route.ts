@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import { R } from "@/lib/result";
+import { R } from "@/lib/http";
 import { validator } from "@/middlewares/validator";
 import { getUserService } from "@/modules/users/users.service";
 

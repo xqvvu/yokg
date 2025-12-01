@@ -7,7 +7,7 @@ export default defineProject({
   test: {
     name: "backend:unit",
     environment: "node",
-    include: ["test/unit/**/*.{test,spec}.ts"],
+    include: ["test/unit/**/*.{test,spec}.ts", "src/**/*.{test,spec}.ts"],
     setupFiles: ["test/unit/setup.ts"],
   },
 });

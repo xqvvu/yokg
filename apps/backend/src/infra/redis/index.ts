@@ -1,5 +1,5 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { isNil, isNotNil } from "es-toolkit";
+import { isError, isNil, isNotNil } from "es-toolkit";
 import { createClient } from "redis";
 import { SystemException } from "@/exceptions/system-exception";
 import { getLogger, infra } from "@/infra/logger";
@@ -37,7 +37,7 @@ export async function configure() {
       } else {
         throw new SystemException({
           errcode: ErrorCode.INTERNAL_ERROR,
-          message: err instanceof Error ? err.message : "Unknown redis error",
+          message: isError(err) ? err.message : "Unknown redis error",
         });
       }
     });

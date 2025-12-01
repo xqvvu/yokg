@@ -1,7 +1,7 @@
 import { createServerKy } from "@graph-mind/ky/server";
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Result } from "@graph-mind/shared/types/result";
-import { isNil, isNotNil } from "es-toolkit";
+import { isError, isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
 import { SystemException } from "@/exceptions/system-exception";
 
@@ -90,7 +90,7 @@ export async function cloneAndFormatJSONResponse(
       },
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown error";
+    const message = isError(error) ? error.message : "unknown error";
     throw new SystemException({
       errcode: ErrorCode.INTERNAL_ERROR,
       message: `Clone JSON response failed: ${message}`,

@@ -6,7 +6,8 @@ import { getLogger, middleware } from "@/infra/logger";
 import { getBetterAuth } from "@/lib/auth";
 
 export const injectSession = createMiddleware<Env>(
-  // TODO: performance: optimize this middleware to avoid unnecessary database queries
+  // FIXME: we shouldn't always inject session into the context
+  // because it will query database every time and cause performance issues
   async function injectSessionMiddleware(c, next) {
     const logger = getLogger(middleware.session);
     const betterAuth = getBetterAuth();
