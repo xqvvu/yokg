@@ -50,6 +50,8 @@ export class RedisTTLCalculator {
   }
 
   readonly $1_minute = 60;
+  readonly $2_minutes = 120;
+  readonly $3_minutes = 180;
   readonly $5_minutes = 300;
   readonly $10_minutes = 600;
   readonly $30_minutes = 1800;

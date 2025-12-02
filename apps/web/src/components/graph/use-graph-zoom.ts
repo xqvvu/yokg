@@ -45,11 +45,20 @@ export function useGraphZoom(
     if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
+    const svgElement = svgRef.current;
 
     // Create zoom behavior with scale limits
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 10])
+      .filter((event: Event) => {
+        // Filter out wheel events without modifier keys - we'll handle them separately
+        if (event instanceof WheelEvent) {
+          return event.ctrlKey || event.metaKey;
+        }
+        // Allow all other events (mouse drag, touch gestures)
+        return true;
+      })
       .on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
         const { x, y, k } = event.transform;
         setTransform({ x, y, k });
@@ -59,9 +68,32 @@ export function useGraphZoom(
     svg.call(zoom);
     zoomBehaviorRef.current = zoom;
 
+    // Handle trackpad panning with wheel events (without modifier keys)
+    const handleWheel = (event: WheelEvent) => {
+      // Only handle wheel events without modifier keys (for panning)
+      if (event.ctrlKey || event.metaKey) return;
+
+      event.preventDefault();
+
+      // Get current transform
+      const currentTransform = d3.zoomTransform(svgElement);
+
+      // Apply translation based on wheel delta
+      const newTransform = currentTransform.translate(-event.deltaX, -event.deltaY);
+
+      // Apply the new transform
+      svg
+        .transition()
+        .duration(0)
+        .call(zoom.transform, newTransform);
+    };
+
+    svgElement.addEventListener("wheel", handleWheel, { passive: false });
+
     // Cleanup
     return () => {
       svg.on(".zoom", null);
+      svgElement.removeEventListener("wheel", handleWheel);
       zoomBehaviorRef.current = null;
     };
   }, []);

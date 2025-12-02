@@ -84,6 +84,21 @@ export const ErrorCode = {
   USER: {
     NOT_FOUND: 20101,
   },
+
+  // Module 30: GRAPH (Knowledge Graph operations)
+  GRAPH: {
+    // 301XX - Node errors
+    NODE_NOT_FOUND: 30101,
+    NODE_ALREADY_EXISTS: 30102,
+
+    // 302XX - Relationship errors
+    RELATIONSHIP_NOT_FOUND: 30201,
+    INVALID_RELATIONSHIP: 30202,
+
+    // 303XX - Query errors
+    GRAPH_QUERY_ERROR: 30301,
+    GRAPH_CONNECTION_ERROR: 30302,
+  },
 } as const;
 
 type ExtractErrorCodes<T> = T extends number

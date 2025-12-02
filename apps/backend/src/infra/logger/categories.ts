@@ -92,6 +92,7 @@ export const mod = {
 export const infra = {
   database: ["graph-mind", "infra", "database"],
   redis: ["graph-mind", "infra", "redis"],
+  neo4j: ["graph-mind", "infra", "neo4j"],
   ai: ["graph-mind", "infra", "ai"],
 } as const;
 

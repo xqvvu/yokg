@@ -29,6 +29,7 @@
     "drizzle-orm": "^0.44.7",
     "es-toolkit": "^1.42.0",
     "hono": "^4.10.7",
+    "neo4j-driver": "^6.0.1",
     "postgres": "^3.4.7",
     "redis": "^5.10.0",
     "zod": "^4.1.13"
