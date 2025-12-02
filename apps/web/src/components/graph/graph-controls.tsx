@@ -1,59 +1,112 @@
-import { Maximize, ZoomIn, ZoomOut } from "lucide-react";
+import { Locate, Maximize2, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface GraphControlsProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
+  onFitToScreen?: () => void;
 }
 
 /**
- * Floating control panel for graph zoom and pan operations.
+ * Enhanced floating control panel for graph zoom and pan operations.
  *
- * Provides three buttons:
- * - Zoom In: Increase zoom level
- * - Zoom Out: Decrease zoom level
- * - Reset View: Return to default zoom and center
+ * Provides controls for:
+ * - Zoom In/Out: Adjust zoom level
+ * - Reset View: Return to default position
+ * - Fit to Screen: Auto-fit all nodes
  */
 export function GraphControls({
   onZoomIn,
   onZoomOut,
   onResetZoom,
+  onFitToScreen,
 }: GraphControlsProps) {
   return (
-    <div className="flex flex-col gap-2 p-2 bg-white border border-slate-200 rounded-lg shadow-md">
-      <Button
-        className="w-10 h-10"
-        onClick={onZoomIn}
-        size="icon"
-        title="Zoom In"
-        type="button"
-        variant="outline"
-      >
-        <ZoomIn className="w-4 h-4" />
-      </Button>
+    <TooltipProvider>
+      <Card className="shadow-lg">
+        <div className="flex flex-col gap-1 p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="h-9 w-9"
+                onClick={onZoomIn}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Zoom In</p>
+            </TooltipContent>
+          </Tooltip>
 
-      <Button
-        className="w-10 h-10"
-        onClick={onZoomOut}
-        size="icon"
-        title="Zoom Out"
-        type="button"
-        variant="outline"
-      >
-        <ZoomOut className="w-4 h-4" />
-      </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="h-9 w-9"
+                onClick={onZoomOut}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Zoom Out</p>
+            </TooltipContent>
+          </Tooltip>
 
-      <Button
-        className="w-10 h-10"
-        onClick={onResetZoom}
-        size="icon"
-        title="Reset View"
-        type="button"
-        variant="outline"
-      >
-        <Maximize className="w-4 h-4" />
-      </Button>
-    </div>
+          <Separator className="my-1" />
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="h-9 w-9"
+                onClick={onResetZoom}
+                size="icon"
+                type="button"
+                variant="ghost"
+              >
+                <Locate className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Reset View</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {onFitToScreen && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="h-9 w-9"
+                  onClick={onFitToScreen}
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left">
+                <p>Fit to Screen</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      </Card>
+    </TooltipProvider>
   );
 }

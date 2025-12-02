@@ -82,7 +82,6 @@ function Field({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: role="group" is not a semantic element
     <div
       className={cn(fieldVariants({ orientation }), className)}
       data-orientation={orientation}

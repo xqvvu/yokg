@@ -1,25 +1,44 @@
 import type { IGraphData, IGraphNode } from "@graph-mind/shared/validate/graph";
-import { Separator } from "@radix-ui/react-separator";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  BookOpen,
+  FileText,
+  Lightbulb,
+  Network,
+  Tag,
+  User,
+} from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface NodeDetailPanelProps {
   node: IGraphNode | null;
   graphData: IGraphData;
+  open: boolean;
   onClose: () => void;
 }
 
 /**
- * Side panel displaying detailed information about a selected node.
+ * Enhanced side panel displaying detailed information about a selected node.
  *
  * Shows:
- * - Node label and type
- * - Node properties
+ * - Node label and type with icon
+ * - Node properties in cards
  * - Connected nodes and their relationships
  */
 export function NodeDetailPanel({
   node,
   graphData,
+  open,
   onClose,
 }: NodeDetailPanelProps) {
   if (!node) return null;
@@ -42,125 +61,190 @@ export function NodeDetailPanel({
     return graphData.nodes.find((n) => n.id === nodeId)?.label ?? nodeId;
   };
 
-  // Node type badge color
-  const getTypeBadgeColor = (type: IGraphNode["type"]) => {
+  // Node type configuration
+  const getTypeConfig = (type: IGraphNode["type"]) => {
     switch (type) {
       case "person":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return {
+          icon: User,
+          variant: "default" as const,
+          color: "text-blue-600",
+          bg: "bg-blue-50",
+        };
       case "document":
-        return "bg-green-100 text-green-700 border-green-200";
+        return {
+          icon: FileText,
+          variant: "secondary" as const,
+          color: "text-green-600",
+          bg: "bg-green-50",
+        };
       case "concept":
-        return "bg-violet-100 text-violet-700 border-violet-200";
+        return {
+          icon: Lightbulb,
+          variant: "outline" as const,
+          color: "text-violet-600",
+          bg: "bg-violet-50",
+        };
       case "topic":
-        return "bg-amber-100 text-amber-700 border-amber-200";
+        return {
+          icon: BookOpen,
+          variant: "default" as const,
+          color: "text-amber-600",
+          bg: "bg-amber-50",
+        };
       default:
-        return "bg-slate-100 text-slate-700 border-slate-200";
+        return {
+          icon: Tag,
+          variant: "outline" as const,
+          color: "text-slate-600",
+          bg: "bg-slate-50",
+        };
     }
   };
 
+  const typeConfig = getTypeConfig(node.type);
+  const TypeIcon = typeConfig.icon;
+
   return (
-    <div className="w-80 bg-white border-l border-slate-200 p-4 overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-slate-900">{node.label}</h3>
-          <span
-            className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded-md border ${getTypeBadgeColor(node.type)}`}
-          >
-            {node.type}
-          </span>
-        </div>
-        <Button
-          className="shrink-0"
-          onClick={onClose}
-          size="icon"
-          type="button"
-          variant="ghost"
-        >
-          <X className="w-4 h-4" />
-        </Button>
-      </div>
-
-      <Separator className="my-4" />
-
-      {/* Properties */}
-      {Object.keys(node.properties).length > 0 && (
-        <div className="mb-6">
-          <h4 className="text-sm font-semibold text-slate-700 mb-2">
-            Properties
-          </h4>
-          <div className="space-y-2">
-            {Object.entries(node.properties).map(([key, value]) => (
-              <div
-                className="flex justify-between text-sm"
-                key={key}
+    <Sheet
+      onOpenChange={onClose}
+      open={open}
+    >
+      <SheetContent className="w-[400px] sm:w-[540px] p-0">
+        <SheetHeader className="px-6 py-4 border-b">
+          <div className="flex items-start gap-4">
+            <Avatar className={`h-12 w-12 ${typeConfig.bg}`}>
+              <AvatarFallback className={typeConfig.bg}>
+                <TypeIcon className={`h-6 w-6 ${typeConfig.color}`} />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <SheetTitle className="text-xl font-bold truncate">
+                {node.label}
+              </SheetTitle>
+              <Badge
+                className="mt-2"
+                variant={typeConfig.variant}
               >
-                <span className="text-slate-600 font-medium">{key}:</span>
-                <span className="text-slate-900">{String(value)}</span>
-              </div>
-            ))}
+                {node.type}
+              </Badge>
+            </div>
           </div>
-        </div>
-      )}
+        </SheetHeader>
 
-      <Separator className="my-4" />
+        <ScrollArea className="h-[calc(100vh-100px)]">
+          <div className="px-6 py-4 space-y-6">
+            {/* Properties Card */}
+            {Object.keys(node.properties).length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    Properties
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {Object.entries(node.properties).map(([key, value]) => (
+                    <div
+                      className="flex items-start justify-between gap-4 text-sm"
+                      key={key}
+                    >
+                      <span className="text-muted-foreground font-medium capitalize">
+                        {key}:
+                      </span>
+                      <span className="text-right font-mono text-xs bg-muted px-2 py-1 rounded">
+                        {String(value)}
+                      </span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
 
-      {/* Connections */}
-      <div>
-        <h4 className="text-sm font-semibold text-slate-700 mb-3">
-          Connections
-        </h4>
+            {/* Connections Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Network className="h-4 w-4" />
+                  Connections
+                  <Badge
+                    className="ml-auto"
+                    variant="secondary"
+                  >
+                    {connectedEdges.length}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Outgoing connections */}
+                {outgoingConnections.length > 0 && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
+                      Outgoing ({outgoingConnections.length})
+                    </h5>
+                    <div className="space-y-2">
+                      {outgoingConnections.map((edge) => (
+                        <div
+                          className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-sm"
+                          key={edge.id}
+                        >
+                          <Badge
+                            className="text-xs shrink-0"
+                            variant="outline"
+                          >
+                            {edge.type}
+                          </Badge>
+                          <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <span className="font-medium truncate">
+                            {getNodeLabel(edge.target)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-        {/* Outgoing connections */}
-        {outgoingConnections.length > 0 && (
-          <div className="mb-4">
-            <h5 className="text-xs font-medium text-slate-500 uppercase mb-2">
-              Outgoing
-            </h5>
-            <ul className="space-y-2">
-              {outgoingConnections.map((edge) => (
-                <li
-                  className="text-sm"
-                  key={edge.id}
-                >
-                  <span className="text-slate-600">{edge.type}</span>
-                  <span className="text-slate-400 mx-1">→</span>
-                  <span className="text-slate-900 font-medium">
-                    {getNodeLabel(edge.target)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                {outgoingConnections.length > 0 &&
+                  incomingConnections.length > 0 && <Separator />}
+
+                {/* Incoming connections */}
+                {incomingConnections.length > 0 && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-muted-foreground uppercase mb-3">
+                      Incoming ({incomingConnections.length})
+                    </h5>
+                    <div className="space-y-2">
+                      {incomingConnections.map((edge) => (
+                        <div
+                          className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-sm"
+                          key={edge.id}
+                        >
+                          <span className="font-medium truncate">
+                            {getNodeLabel(edge.source)}
+                          </span>
+                          <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                          <Badge
+                            className="text-xs shrink-0"
+                            variant="outline"
+                          >
+                            {edge.type}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {connectedEdges.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No connections found
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        )}
-
-        {/* Incoming connections */}
-        {incomingConnections.length > 0 && (
-          <div>
-            <h5 className="text-xs font-medium text-slate-500 uppercase mb-2">
-              Incoming
-            </h5>
-            <ul className="space-y-2">
-              {incomingConnections.map((edge) => (
-                <li
-                  className="text-sm"
-                  key={edge.id}
-                >
-                  <span className="text-slate-900 font-medium">
-                    {getNodeLabel(edge.source)}
-                  </span>
-                  <span className="text-slate-400 mx-1">→</span>
-                  <span className="text-slate-600">{edge.type}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {connectedEdges.length === 0 && (
-          <p className="text-sm text-slate-500 italic">No connections</p>
-        )}
-      </div>
-    </div>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }

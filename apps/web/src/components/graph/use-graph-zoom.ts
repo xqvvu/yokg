@@ -79,13 +79,13 @@ export function useGraphZoom(
       const currentTransform = d3.zoomTransform(svgElement);
 
       // Apply translation based on wheel delta
-      const newTransform = currentTransform.translate(-event.deltaX, -event.deltaY);
+      const newTransform = currentTransform.translate(
+        -event.deltaX,
+        -event.deltaY,
+      );
 
       // Apply the new transform
-      svg
-        .transition()
-        .duration(0)
-        .call(zoom.transform, newTransform);
+      svg.transition().duration(0).call(zoom.transform, newTransform);
     };
 
     svgElement.addEventListener("wheel", handleWheel, { passive: false });

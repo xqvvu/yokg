@@ -1,5 +1,5 @@
 import type { IGraphEdge } from "@graph-mind/shared/validate/graph";
-import React from "react";
+import React, { useId } from "react";
 import type { SimulationNode } from "@/components/graph/use-force-simulation";
 
 interface GraphEdgeProps {
@@ -11,23 +11,52 @@ interface GraphEdgeProps {
 /**
  * Renders a single edge (relationship) between two nodes in the graph.
  *
- * Edges are rendered as SVG lines connecting source and target nodes.
- * The line style varies based on the relationship type.
+ * Enhanced edges with:
+ * - Curved paths for better visual flow
+ * - Arrow markers indicating direction
+ * - Type-specific styling
  */
 function GraphEdgeComponent({ edge, sourceNode, targetNode }: GraphEdgeProps) {
-  // Edge styling based on relationship type
+  const arrowId = useId();
+
+  // Enhanced edge styling based on relationship type
   const getEdgeStyle = (type: IGraphEdge["type"]) => {
     switch (type) {
       case "wrote":
-        return { stroke: "#94a3b8", strokeWidth: 2, strokeDasharray: "none" }; // slate-400, solid
+        return {
+          stroke: "#64748b",
+          strokeWidth: 2.5,
+          strokeDasharray: "none",
+          opacity: 0.7,
+        };
       case "references":
-        return { stroke: "#cbd5e1", strokeWidth: 1.5, strokeDasharray: "4,2" }; // slate-300, dashed
+        return {
+          stroke: "#94a3b8",
+          strokeWidth: 2,
+          strokeDasharray: "6,3",
+          opacity: 0.6,
+        };
       case "related_to":
-        return { stroke: "#e2e8f0", strokeWidth: 1, strokeDasharray: "none" }; // slate-200, thin solid
+        return {
+          stroke: "#cbd5e1",
+          strokeWidth: 1.5,
+          strokeDasharray: "none",
+          opacity: 0.5,
+        };
       case "belongs_to":
-        return { stroke: "#94a3b8", strokeWidth: 1.5, strokeDasharray: "2,2" }; // slate-400, dotted
+        return {
+          stroke: "#64748b",
+          strokeWidth: 2,
+          strokeDasharray: "3,3",
+          opacity: 0.6,
+        };
       default:
-        return { stroke: "#cbd5e1", strokeWidth: 1, strokeDasharray: "none" };
+        return {
+          stroke: "#cbd5e1",
+          strokeWidth: 1.5,
+          strokeDasharray: "none",
+          opacity: 0.5,
+        };
     }
   };
 
@@ -43,19 +72,65 @@ function GraphEdgeComponent({ edge, sourceNode, targetNode }: GraphEdgeProps) {
     return null;
   }
 
+  // Calculate curve control point for smoother edges
+  const dx = targetNode.x - sourceNode.x;
+  const dy = targetNode.y - sourceNode.y;
+  const dr = Math.sqrt(dx * dx + dy * dy);
+
+  // Create a curved path
+  const pathData = `M ${sourceNode.x},${sourceNode.y} Q ${sourceNode.x + dx / 2},${sourceNode.y + dy / 2 - dr * 0.1} ${targetNode.x},${targetNode.y}`;
+
   return (
-    <line
-      opacity={0.6}
-      stroke={style.stroke}
-      strokeDasharray={style.strokeDasharray}
-      strokeWidth={style.strokeWidth}
-      x1={sourceNode.x}
-      x2={targetNode.x}
-      y1={sourceNode.y}
-      y2={targetNode.y}
-    >
-      <title>{`${edge.type}: ${sourceNode.label} → ${targetNode.label}`}</title>
-    </line>
+    <g>
+      {/* Shadow edge for depth */}
+      <path
+        d={pathData}
+        fill="none"
+        opacity={style.opacity * 0.3}
+        stroke="#000000"
+        strokeDasharray={style.strokeDasharray}
+        strokeLinecap="round"
+        strokeWidth={style.strokeWidth}
+        transform="translate(0, 1)"
+      />
+
+      {/* Main edge */}
+      <path
+        d={pathData}
+        fill="none"
+        markerEnd={`url(#${arrowId})`}
+        opacity={style.opacity}
+        stroke={style.stroke}
+        strokeDasharray={style.strokeDasharray}
+        strokeLinecap="round"
+        strokeWidth={style.strokeWidth}
+        style={{
+          transition: "all 0.2s ease",
+        }}
+      >
+        <title>{`${edge.type}: ${sourceNode.label} → ${targetNode.label}`}</title>
+      </path>
+
+      {/* Arrow marker definition */}
+      <defs>
+        <marker
+          id={arrowId}
+          markerHeight="10"
+          markerUnits="strokeWidth"
+          markerWidth="10"
+          orient="auto"
+          refX="9"
+          refY="3"
+          viewBox="0 0 10 10"
+        >
+          <path
+            d="M 0 0 L 10 5 L 0 10 z"
+            fill={style.stroke}
+            opacity={style.opacity}
+          />
+        </marker>
+      </defs>
+    </g>
   );
 }
 

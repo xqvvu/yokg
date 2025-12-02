@@ -1,5 +1,5 @@
 import type { IGraphNode } from "@graph-mind/shared/validate/graph";
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import type { SimulationNode } from "@/components/graph/use-force-simulation";
 
 interface GraphNodeProps {
@@ -12,14 +12,17 @@ interface GraphNodeProps {
 }
 
 /**
- * Node color palette based on node type.
- * Colors are from Tailwind CSS color scale.
+ * Enhanced node color palette based on node type.
+ * Uses modern gradient-like colors for better visual appeal.
  */
-const NODE_COLORS: Record<IGraphNode["type"], string> = {
-  person: "#3b82f6", // blue-500
-  document: "#10b981", // green-500
-  concept: "#8b5cf6", // violet-500
-  topic: "#f59e0b", // amber-500
+const NODE_COLORS: Record<
+  IGraphNode["type"],
+  { fill: string; stroke: string }
+> = {
+  person: { fill: "#3b82f6", stroke: "#2563eb" }, // blue-500/600
+  document: { fill: "#10b981", stroke: "#059669" }, // green-500/600
+  concept: { fill: "#8b5cf6", stroke: "#7c3aed" }, // violet-500/600
+  topic: { fill: "#f59e0b", stroke: "#d97706" }, // amber-500/600
 };
 
 /**
@@ -42,19 +45,20 @@ function GraphNodeComponent({
 }: GraphNodeProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const gradientId = useId();
 
   // Guard: only render if node has position
   if (node.x === undefined || node.y === undefined) {
     return null;
   }
 
-  const baseRadius = 10;
+  const baseRadius = 12;
   const radius = isSelected
-    ? baseRadius + 4
+    ? baseRadius + 3
     : isHovered
       ? baseRadius + 2
       : baseRadius;
-  const color = NODE_COLORS[node.type];
+  const colors = NODE_COLORS[node.type];
 
   const handleMouseDown = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -104,44 +108,110 @@ function GraphNodeComponent({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       role="button"
-      style={{ cursor: isDragging ? "grabbing" : "grab" }}
+      style={{
+        cursor: isDragging ? "grabbing" : "grab",
+        transition: "all 0.2s ease",
+      }}
       tabIndex={0}
       transform={`translate(${node.x}, ${node.y})`}
     >
-      {/* Node circle */}
+      {/* Outer glow for hover/selection */}
+      {(isHovered || isSelected) && (
+        <circle
+          fill={colors.fill}
+          opacity={0.2}
+          pointerEvents="none"
+          r={radius + 6}
+        />
+      )}
+
+      {/* Node circle with shadow effect */}
       <circle
-        fill={color}
-        opacity={isHovered || isSelected ? 1 : 0.9}
+        fill={`url(#${gradientId})`}
+        opacity={0.3}
+        pointerEvents="none"
         r={radius}
-        stroke={isSelected ? "#ffffff" : color}
-        strokeWidth={isSelected ? 3 : 0}
+        transform="translate(0, 2)"
+      />
+
+      {/* Main node circle */}
+      <circle
+        fill={colors.fill}
+        opacity={1}
+        r={radius}
+        stroke={colors.stroke}
+        strokeWidth={isSelected ? 3 : 2}
+        style={{
+          filter: isHovered ? "brightness(1.1)" : "brightness(1)",
+          transition: "all 0.2s ease",
+        }}
       >
         <title>{`${node.label} (${node.type})`}</title>
       </circle>
 
-      {/* Node label */}
+      {/* Highlight for 3D effect */}
+      <circle
+        cx={-radius / 3}
+        cy={-radius / 3}
+        fill="white"
+        opacity={0.3}
+        pointerEvents="none"
+        r={radius / 3}
+      />
+
+      {/* Node label with background */}
+      <rect
+        fill="white"
+        height="18"
+        opacity={isHovered || isSelected ? 0.9 : 0.8}
+        pointerEvents="none"
+        rx="4"
+        width={node.label.length * 7 + 8}
+        x={-(node.label.length * 7 + 8) / 2}
+        y={radius + 8}
+      />
       <text
-        fill="#1f2937"
-        fontSize="12"
-        fontWeight={isSelected ? "600" : "400"}
+        fill="#0f172a"
+        fontSize="11"
+        fontWeight={isSelected ? "600" : "500"}
         pointerEvents="none"
         textAnchor="middle"
-        y={radius + 15}
+        y={radius + 20}
       >
         {node.label}
       </text>
 
-      {/* Selection ring (visual indicator) */}
+      {/* Selection ring */}
       {isSelected && (
         <circle
           fill="none"
-          opacity={0.4}
+          opacity={0.6}
           pointerEvents="none"
           r={radius + 8}
-          stroke="#3b82f6"
+          stroke={colors.fill}
+          strokeDasharray="4 2"
           strokeWidth={2}
+          style={{
+            animation: "pulse 2s ease-in-out infinite",
+          }}
         />
       )}
+
+      {/* SVG Definitions for gradients */}
+      <defs>
+        <radialGradient id={gradientId}>
+          <stop
+            offset="0%"
+            stopColor="#000000"
+            stopOpacity="0.3"
+          />
+          <stop
+            offset="100%"
+            stopColor="#000000"
+            stopOpacity="0"
+          />
+        </radialGradient>
+      </defs>
     </g>
   );
 }
