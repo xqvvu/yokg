@@ -5,16 +5,53 @@ import { ZodError } from "zod";
 
 describe("ConfigSchema", () => {
   const validProcessEnv = {
+    // server
     NODE_ENV: "development",
     PORT: "10001",
-    DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/postgres",
-    REDIS_URL: "redis://localhost:6379",
     CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001",
     LOCALE: "en-US",
     TZ: "America/Los_Angeles",
+
+    // postgres
+    POSTGRES_PORT: "5432",
+    POSTGRES_HOST: "localhost",
+    POSTGRES_DB: "graph-mind",
+    POSTGRES_USER: "postgres",
+    POSTGRES_PASSWORD: "mypassword",
+    DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/graph-mind",
+
+    // redis
+    REDIS_PORT: "6379",
+    REDIS_HOST: "localhost",
+    REDIS_DB: "0",
+    REDIS_PASSWORD: "mypassword",
+    REDIS_URL: "redis://:mypassword@localhost:6379/0",
+
+    // neo4j
+    NEO4J_HTTP_PORT: "7474",
+    NEO4J_BOLT_PORT: "7687",
+    NEO4J_HOST: "localhost",
+    NEO4J_USER: "neo4j",
+    NEO4J_PASSWORD: "mypassword",
+    NEO4J_DATABASE: "graph-mind",
+    NEO4J_MAX_CONNECTION_POOL_SIZE: "50",
+    NEO4J_CONNECTION_TIMEOUT: "30000",
+    NEO4J_URI: "neo4j://localhost:7687",
+
+    // s3
+    S3_VENDOR: "rustfs",
+    S3_FORCE_PATH_STYLE: "true",
+
+    // rustfs
+    RUSTFS_API_PORT: "9000",
+    RUSTFS_CONSOLE_PORT: "9001",
+    RUSTFS_ACCESS_KEY: "rustfsadmin",
+    RUSTFS_SECRET_KEY: "mypassword",
+
+    // better-auth
     BETTER_AUTH_SECRET:
       "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
-    BETTER_AUTH_URL: "http://localhost:3000",
+    BETTER_AUTH_URL: "http://localhost:10001",
   };
 
   let error: unknown;
@@ -427,42 +464,377 @@ describe("ConfigSchema", () => {
     });
   });
 
+  describe("PostgreSQL validation", () => {
+    it("should apply default POSTGRES_PORT when missing", () => {
+      processEnv = omit(processEnv, ["POSTGRES_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.POSTGRES_PORT).toBe(5432);
+    });
+
+    it("should apply default POSTGRES_HOST when missing", () => {
+      processEnv = omit(processEnv, ["POSTGRES_HOST"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.POSTGRES_HOST).toBe("localhost");
+    });
+
+    it("should apply default POSTGRES_DB when missing", () => {
+      processEnv = omit(processEnv, ["POSTGRES_DB"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.POSTGRES_DB).toBe("graph-mind");
+    });
+
+    it("should apply default POSTGRES_USER when missing", () => {
+      processEnv = omit(processEnv, ["POSTGRES_USER"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.POSTGRES_USER).toBe("postgres");
+    });
+
+    it("should reject missing POSTGRES_PASSWORD", () => {
+      processEnv = omit(processEnv, ["POSTGRES_PASSWORD"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject empty POSTGRES_PASSWORD", () => {
+      processEnv.POSTGRES_PASSWORD = "";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+  });
+
+  describe("Redis validation", () => {
+    it("should apply default REDIS_PORT when missing", () => {
+      processEnv = omit(processEnv, ["REDIS_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.REDIS_PORT).toBe(6379);
+    });
+
+    it("should apply default REDIS_HOST when missing", () => {
+      processEnv = omit(processEnv, ["REDIS_HOST"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.REDIS_HOST).toBe("localhost");
+    });
+
+    it("should apply default REDIS_DB when missing", () => {
+      processEnv = omit(processEnv, ["REDIS_DB"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.REDIS_DB).toBe(0);
+    });
+
+    it("should reject missing REDIS_PASSWORD", () => {
+      processEnv = omit(processEnv, ["REDIS_PASSWORD"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject empty REDIS_PASSWORD", () => {
+      processEnv.REDIS_PASSWORD = "";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+  });
+
+  describe("Neo4j validation", () => {
+    it("should apply default NEO4J_HTTP_PORT when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_HTTP_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_HTTP_PORT).toBe(7474);
+    });
+
+    it("should apply default NEO4J_BOLT_PORT when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_BOLT_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_BOLT_PORT).toBe(7687);
+    });
+
+    it("should apply default NEO4J_HOST when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_HOST"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_HOST).toBe("localhost");
+    });
+
+    it("should apply default NEO4J_USER when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_USER"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_USER).toBe("neo4j");
+    });
+
+    it("should apply default NEO4J_DATABASE when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_DATABASE"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_DATABASE).toBe("graph-mind");
+    });
+
+    it("should apply default NEO4J_MAX_CONNECTION_POOL_SIZE when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_MAX_CONNECTION_POOL_SIZE"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_MAX_CONNECTION_POOL_SIZE).toBe(50);
+    });
+
+    it("should apply default NEO4J_CONNECTION_TIMEOUT when missing", () => {
+      processEnv = omit(processEnv, ["NEO4J_CONNECTION_TIMEOUT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_CONNECTION_TIMEOUT).toBe(30000);
+    });
+
+    it("should reject missing NEO4J_PASSWORD", () => {
+      processEnv = omit(processEnv, ["NEO4J_PASSWORD"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject empty NEO4J_PASSWORD", () => {
+      processEnv.NEO4J_PASSWORD = "";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should accept valid neo4j URI", () => {
+      processEnv.NEO4J_URI = "neo4j://localhost:7687";
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_URI).toBe("neo4j://localhost:7687");
+    });
+
+    it("should accept neo4j+s URI for secure connections", () => {
+      processEnv.NEO4J_URI = "neo4j+s://example.com:7687";
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.NEO4J_URI).toBe("neo4j+s://example.com:7687");
+    });
+
+    it("should reject missing NEO4J_URI", () => {
+      processEnv = omit(processEnv, ["NEO4J_URI"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject invalid NEO4J_URI protocol", () => {
+      processEnv.NEO4J_URI = "bolt://localhost:7687";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+  });
+
+  describe("S3 validation", () => {
+    it("should apply default S3_VENDOR when missing", () => {
+      processEnv = omit(processEnv, ["S3_VENDOR"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.S3_VENDOR).toBe("rustfs");
+    });
+
+    it("should transform S3_FORCE_PATH_STYLE 'true' to boolean true", () => {
+      processEnv.S3_FORCE_PATH_STYLE = "true";
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.S3_FORCE_PATH_STYLE).toBe(true);
+    });
+
+    it("should transform S3_FORCE_PATH_STYLE 'false' to boolean false", () => {
+      processEnv.S3_FORCE_PATH_STYLE = "false";
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.S3_FORCE_PATH_STYLE).toBe(false);
+    });
+
+    it("should apply default S3_FORCE_PATH_STYLE when missing", () => {
+      processEnv = omit(processEnv, ["S3_FORCE_PATH_STYLE"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.S3_FORCE_PATH_STYLE).toBe(false);
+    });
+  });
+
+  describe("RustFS validation", () => {
+    it("should apply default RUSTFS_API_PORT when missing", () => {
+      processEnv = omit(processEnv, ["RUSTFS_API_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.RUSTFS_API_PORT).toBe(9000);
+    });
+
+    it("should apply default RUSTFS_CONSOLE_PORT when missing", () => {
+      processEnv = omit(processEnv, ["RUSTFS_CONSOLE_PORT"]);
+      const result = ConfigSchema.parse(processEnv);
+      expect(result.RUSTFS_CONSOLE_PORT).toBe(9001);
+    });
+
+    it("should reject missing RUSTFS_ACCESS_KEY", () => {
+      processEnv = omit(processEnv, ["RUSTFS_ACCESS_KEY"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject empty RUSTFS_ACCESS_KEY", () => {
+      processEnv.RUSTFS_ACCESS_KEY = "";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject missing RUSTFS_SECRET_KEY", () => {
+      processEnv = omit(processEnv, ["RUSTFS_SECRET_KEY"]);
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+
+    it("should reject empty RUSTFS_SECRET_KEY", () => {
+      processEnv.RUSTFS_SECRET_KEY = "";
+      try {
+        ConfigSchema.parse(processEnv);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeInstanceOf(ZodError);
+    });
+  });
+
   describe("Complete validation scenarios", () => {
-    it("should accept valid configuration with all optional fields", () => {
+    it("should accept valid configuration with all fields", () => {
       const result = ConfigSchema.parse(processEnv);
       expect(result).toEqual({
+        // server
         NODE_ENV: "development",
         PORT: 10001,
-        DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/postgres",
-        REDIS_URL: "redis://localhost:6379",
         CORS_ALLOWED_ORIGINS: [
           "http://localhost:3000",
           "http://localhost:3001",
         ],
         LOCALE: "en-US",
         TZ: "America/Los_Angeles",
+
+        // postgres
+        POSTGRES_PORT: 5432,
+        POSTGRES_HOST: "localhost",
+        POSTGRES_DB: "graph-mind",
+        POSTGRES_USER: "postgres",
+        POSTGRES_PASSWORD: "mypassword",
+        DATABASE_URL:
+          "postgres://postgres:mypassword@localhost:5432/graph-mind",
+
+        // redis
+        REDIS_PORT: 6379,
+        REDIS_HOST: "localhost",
+        REDIS_DB: 0,
+        REDIS_PASSWORD: "mypassword",
+        REDIS_URL: "redis://:mypassword@localhost:6379/0",
+
+        // neo4j
+        NEO4J_HTTP_PORT: 7474,
+        NEO4J_BOLT_PORT: 7687,
+        NEO4J_HOST: "localhost",
+        NEO4J_USER: "neo4j",
+        NEO4J_PASSWORD: "mypassword",
+        NEO4J_DATABASE: "graph-mind",
+        NEO4J_MAX_CONNECTION_POOL_SIZE: 50,
+        NEO4J_CONNECTION_TIMEOUT: 30000,
+        NEO4J_URI: "neo4j://localhost:7687",
+
+        // s3
+        S3_VENDOR: "rustfs",
+        S3_FORCE_PATH_STYLE: true,
+
+        // rustfs
+        RUSTFS_API_PORT: 9000,
+        RUSTFS_CONSOLE_PORT: 9001,
+        RUSTFS_ACCESS_KEY: "rustfsadmin",
+        RUSTFS_SECRET_KEY: "mypassword",
+
+        // better-auth
         BETTER_AUTH_SECRET:
           "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
-        BETTER_AUTH_URL: "http://localhost:3000",
+        BETTER_AUTH_URL: "http://localhost:10001",
       });
     });
 
     it("should accept valid configuration with only required fields", () => {
       const minimalConfig = {
+        // required fields (no defaults)
+        POSTGRES_PASSWORD: "pgpass",
         DATABASE_URL: "postgresql://user:password@localhost:5432/dbname",
+        REDIS_PASSWORD: "redispass",
         REDIS_URL: "redis://localhost:6379",
+        NEO4J_PASSWORD: "neo4jpass",
+        NEO4J_URI: "neo4j://localhost:7687",
+        RUSTFS_ACCESS_KEY: "accesskey",
+        RUSTFS_SECRET_KEY: "secretkey",
         BETTER_AUTH_SECRET: "secret-key",
         BETTER_AUTH_URL: "http://localhost:3000",
       };
       const result = ConfigSchema.parse(minimalConfig);
+
+      // required fields
+      expect(result.POSTGRES_PASSWORD).toBe(minimalConfig.POSTGRES_PASSWORD);
       expect(result.DATABASE_URL).toBe(minimalConfig.DATABASE_URL);
+      expect(result.REDIS_PASSWORD).toBe(minimalConfig.REDIS_PASSWORD);
       expect(result.REDIS_URL).toBe(minimalConfig.REDIS_URL);
+      expect(result.NEO4J_PASSWORD).toBe(minimalConfig.NEO4J_PASSWORD);
+      expect(result.NEO4J_URI).toBe(minimalConfig.NEO4J_URI);
+      expect(result.RUSTFS_ACCESS_KEY).toBe(minimalConfig.RUSTFS_ACCESS_KEY);
+      expect(result.RUSTFS_SECRET_KEY).toBe(minimalConfig.RUSTFS_SECRET_KEY);
       expect(result.BETTER_AUTH_SECRET).toBe(minimalConfig.BETTER_AUTH_SECRET);
       expect(result.BETTER_AUTH_URL).toBe(minimalConfig.BETTER_AUTH_URL);
-      expect(result.PORT).toBe(10001); // default
-      expect(result.LOCALE).toBe("zh-CN"); // default
-      expect(result.TZ).toBe("Asia/Shanghai"); // default
-      expect(result.CORS_ALLOWED_ORIGINS).toEqual([]); // default
+
+      // defaults
+      expect(result.PORT).toBe(10001);
+      expect(result.LOCALE).toBe("zh-CN");
+      expect(result.TZ).toBe("Asia/Shanghai");
+      expect(result.CORS_ALLOWED_ORIGINS).toEqual([]);
+      expect(result.POSTGRES_PORT).toBe(5432);
+      expect(result.POSTGRES_HOST).toBe("localhost");
+      expect(result.POSTGRES_DB).toBe("graph-mind");
+      expect(result.POSTGRES_USER).toBe("postgres");
+      expect(result.REDIS_PORT).toBe(6379);
+      expect(result.REDIS_HOST).toBe("localhost");
+      expect(result.REDIS_DB).toBe(0);
+      expect(result.NEO4J_HTTP_PORT).toBe(7474);
+      expect(result.NEO4J_BOLT_PORT).toBe(7687);
+      expect(result.NEO4J_HOST).toBe("localhost");
+      expect(result.NEO4J_USER).toBe("neo4j");
+      expect(result.NEO4J_DATABASE).toBe("graph-mind");
+      expect(result.NEO4J_MAX_CONNECTION_POOL_SIZE).toBe(50);
+      expect(result.NEO4J_CONNECTION_TIMEOUT).toBe(30000);
+      expect(result.S3_VENDOR).toBe("rustfs");
+      expect(result.S3_FORCE_PATH_STYLE).toBe(false);
+      expect(result.RUSTFS_API_PORT).toBe(9000);
+      expect(result.RUSTFS_CONSOLE_PORT).toBe(9001);
     });
   });
 });

@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@toolwind/corner-shape";
-@plugin "@iconify/tailwind4";
 @custom-variant dark (&:is(.dark *));
 
 body {

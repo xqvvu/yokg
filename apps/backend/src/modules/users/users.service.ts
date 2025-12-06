@@ -7,12 +7,12 @@ import { getUserRepository } from "@/repositories/users.repository";
 import type { IUserRepository } from "@/repositories/users.repository.interface";
 
 export class UserService {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private userRepo: IUserRepository) {}
 
   async selectAllUsers(): Promise<IUser[]> {
     const logger = getLogger(mod.users);
     logger.debug`Fetching all users`;
-    const users = await this.userRepository.findMany();
+    const users = await this.userRepo.findMany();
     logger.debug`Found ${users.length} users`;
     return users;
   }
@@ -20,7 +20,7 @@ export class UserService {
   async selectUserById(id: string): Promise<IUser> {
     const logger = getLogger(mod.users);
     logger.debug`Fetch user by id ${id}`;
-    const user = await this.userRepository.findById(id);
+    const user = await this.userRepo.findById(id);
 
     if (isNil(user)) {
       logger.debug`User not found: ${id}`;

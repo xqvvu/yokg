@@ -38,6 +38,7 @@ yarn-error.log*
 *.pem
 .vscode/settings.json
 .idea
+queries/
 
 # Docker Compose
 .docker

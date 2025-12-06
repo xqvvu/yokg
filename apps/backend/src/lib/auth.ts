@@ -17,6 +17,7 @@ export async function configure() {
     const logger = getLogger(external.betterAuth);
 
     auth = betterAuth({
+      baseURL: config.betterAuthUrl,
       trustedOrigins: config.corsAllowedOrigins,
       database: drizzleAdapter(db, {
         schema,

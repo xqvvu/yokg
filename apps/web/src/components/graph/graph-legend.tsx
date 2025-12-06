@@ -1,8 +1,9 @@
 import type { IGraphData } from "@graph-mind/shared/validate/graph";
-import { BookOpen, FileText, Lightbulb, Network, User } from "lucide-react";
+import { Network } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { extractNodeTypes, getNodeStyleConfig } from "@/lib/graph-utils";
 
 interface GraphLegendProps {
   graphData: IGraphData;
@@ -10,6 +11,7 @@ interface GraphLegendProps {
 
 /**
  * Legend and statistics panel for the graph visualization
+ * Dynamically displays all node types present in the graph data
  */
 export function GraphLegend({ graphData }: GraphLegendProps) {
   // Calculate statistics
@@ -21,36 +23,9 @@ export function GraphLegend({ graphData }: GraphLegendProps) {
     {} as Record<string, number>,
   );
 
-  const typeConfigs = [
-    {
-      type: "person",
-      icon: User,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
-      label: "People",
-    },
-    {
-      type: "document",
-      icon: FileText,
-      color: "text-green-600",
-      bg: "bg-green-50",
-      label: "Documents",
-    },
-    {
-      type: "concept",
-      icon: Lightbulb,
-      color: "text-violet-600",
-      bg: "bg-violet-50",
-      label: "Concepts",
-    },
-    {
-      type: "topic",
-      icon: BookOpen,
-      color: "text-amber-600",
-      bg: "bg-amber-50",
-      label: "Topics",
-    },
-  ];
+  // Dynamically discover node types and generate configs
+  const discoveredTypes = extractNodeTypes(graphData.nodes);
+  const typeConfigs = discoveredTypes.map((type) => getNodeStyleConfig(type));
 
   return (
     <Card className="shadow-lg">

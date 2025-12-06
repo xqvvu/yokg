@@ -30,13 +30,7 @@
         "useThrowNewError": "on"
       },
       "nursery": {
-        "useConsistentArrowReturn": {
-          "level": "on",
-          "options": {
-            "style": "asNeeded",
-            "requireForObjectLiteral": true
-          }
-        }
+        "useConsistentArrowReturn": "off"
       }
     }
   },

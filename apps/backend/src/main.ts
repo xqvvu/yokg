@@ -1,23 +1,55 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "@/app";
-import { configure as database } from "@/infra/database";
-import { getLogger, configure as logger, root } from "@/infra/logger";
-import { configure as neo4j, initializeNeo4jDatabase } from "@/infra/neo4j";
-import { configure as redis } from "@/infra/redis";
+import { configure as database, destroyDb } from "@/infra/database";
+import {
+  destroyLogger,
+  getLogger,
+  configure as logger,
+  root,
+} from "@/infra/logger";
+import { destroyNeo4j, configure as neo4j } from "@/infra/neo4j";
+import {
+  destroyObjectStorage,
+  configure as objectStorage,
+} from "@/infra/object-storage";
+import { destroyRdb, configure as redis } from "@/infra/redis";
 import { configure as betterAuth } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 
 export async function prepare() {
   await logger();
-  await database();
-  await redis();
-  await neo4j();
-  await initializeNeo4jDatabase();
-  await betterAuth();
+  await Promise.all([
+    database(),
+    redis(),
+    neo4j(),
+    objectStorage(),
+    betterAuth(),
+  ]);
+}
+
+export async function destroy() {
+  await Promise.all([
+    destroyDb(),
+    destroyRdb(),
+    destroyNeo4j(),
+    destroyObjectStorage(),
+    destroyLogger(),
+  ]);
+}
+
+async function shutdown() {
+  const logger = getLogger(root);
+  logger.info`✅ Gracefully shutdown`;
+
+  await destroy();
+  process.exit(0);
 }
 
 async function bootstrap() {
   await prepare();
+
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
 
   const config = getConfig();
   const app = await createApp(config);

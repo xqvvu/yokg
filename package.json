@@ -11,8 +11,9 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@types/node": "catalog:",
-    "@vitest/ui": "^4.0.14",
+    "@vitest/ui": "^4.0.15",
     "lefthook": "catalog:",
+    "tsx": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

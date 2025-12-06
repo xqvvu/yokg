@@ -13,6 +13,7 @@ import { getConfig } from "@/lib/config";
 import { R } from "@/lib/http";
 import { logger } from "@/middlewares/logger";
 import { auth } from "@/modules/auth/auth.route";
+import { graph } from "@/modules/graph/graph.route";
 import { llm } from "@/modules/llm/llm.route";
 import { users } from "@/modules/users/users.route";
 
@@ -42,6 +43,7 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
   app.route("/api", auth);
   app.route("/api", users);
   app.route("/api", llm);
+  app.route("/api", graph);
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------event handlers--------------------//

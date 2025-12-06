@@ -1,4 +1,4 @@
-import type { BetterAuthResult } from "@graph-mind/shared/types/result";
+import type { BetterAuthResult } from "@graph-mind/shared/types/http";
 import type { IUser } from "@graph-mind/shared/validate/users";
 import { z } from "zod";
 

@@ -1,6 +1,7 @@
+import { detectFileType } from "@graph-mind/shared/lib/file-type";
 import { createFileRoute } from "@tanstack/react-router";
-import { Icon } from "@/components/icon";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/")({
   component: App,
@@ -8,19 +9,28 @@ export const Route = createFileRoute("/")({
 
 // TODO: complete this page
 function App() {
+  const [_, setFile] = useState<File | null>(null);
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setFile(file);
+    const fileType = await detectFileType({
+      from: "stream",
+      file: file.stream(),
+    });
+    console.info(fileType);
+  };
+
   return (
     <div className="flex justify-center py-5 gap-4 items-center">
-      <Button
-        className="cursor-pointer"
-        size="icon-sm"
-      >
-        <Icon
-          className="size-5"
-          icon="icon-[solar--chat-round-like-outline]"
-        />
-      </Button>
-
-      <div className="bg-sky-200 size-40 rounded-[100px] corner-squircle" />
+      <Input
+        className="cursor-pointer max-w-md"
+        onChange={handleFileChange}
+        type="file"
+      />
     </div>
   );
 }

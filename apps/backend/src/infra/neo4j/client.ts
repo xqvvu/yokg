@@ -1,98 +1,74 @@
 import { isNil, isNotNil } from "es-toolkit";
-import neo4j, { type Driver, type Session } from "neo4j-driver";
+import neo4j, {
+  type Driver,
+  type Session,
+  type SessionConfig,
+} from "neo4j-driver";
 import { getLogger, infra } from "@/infra/logger";
-import { loadNeo4jConfig } from "./config";
+import { getConfig } from "@/lib/config";
 
 let driver: Driver | null = null;
+let database: string | null = null;
 
-/**
- * Get the Neo4j driver singleton instance
- */
 export function getNeo4jDriver(): Driver {
   if (isNil(driver)) {
-    throw new Error("Neo4j driver not initialized. Call configure() first.");
+    throw new Error("Neo4j driver not initialized");
   }
   return driver;
 }
 
-/**
- * Initialize and connect to Neo4j database
- */
 export async function configure(): Promise<void> {
-  const logger = getLogger(infra.neo4j);
-
   if (isNotNil(driver)) {
-    logger.warn`Neo4j driver already connected`;
     return;
   }
 
-  try {
-    const config = loadNeo4jConfig();
+  const config = getConfig();
+  const logger = getLogger(infra.neo4j);
 
-    // Redact password for logging
-    const redactedUri = config.uri.replace(/\/\/([^:]+):([^@]+)@/, "//$1:***@");
+  driver = neo4j.driver(
+    config.neo4jUri,
+    neo4j.auth.basic(config.neo4jUser, config.neo4jPassword),
+    {
+      maxConnectionPoolSize: config.neo4jMaxConnectionPoolSize,
+      connectionAcquisitionTimeout: config.neo4jConnectionTimeout,
+    },
+  );
 
-    logger.info`Initialize Neo4j at ${redactedUri}`;
+  database = config.neo4jDatabase;
 
-    driver = neo4j.driver(
-      config.uri,
-      neo4j.auth.basic(config.username, config.password),
-      {
-        maxConnectionPoolSize: config.maxConnectionPoolSize,
-        connectionAcquisitionTimeout: config.connectionTimeout,
-      },
-    );
+  await driver.verifyConnectivity();
 
-    // Verify connectivity
-    await driver.verifyConnectivity();
-
-    logger.info`Neo4j driver connected successfully`;
-  } catch (error) {
-    logger.error`Failed to connect to Neo4j: ${error}`;
-    driver = null;
-    throw error;
-  }
+  logger.info`Neo4j driver connect successfully`;
 }
 
-/**
- * Disconnect from Neo4j database
- */
-export async function destroy(): Promise<void> {
-  const logger = getLogger(infra.neo4j);
-
-  if (isNil(driver)) {
-    logger.debug`Neo4j driver not connected, skipping disconnect`;
-    return;
-  }
-
-  try {
-    logger.info`Disconnecting from Neo4j`;
+export async function destroyNeo4j(): Promise<void> {
+  if (isNotNil(driver)) {
     await driver.close();
     driver = null;
-    logger.info`Neo4j driver disconnected`;
-  } catch (error) {
-    logger.error`Error disconnecting from Neo4j: ${error}`;
-    throw error;
+    database = null;
   }
 }
 
-/**
- * Get a read session
- */
 export function getReadSession(): Session {
-  return getNeo4jDriver().session({ defaultAccessMode: neo4j.session.READ });
+  const sessionConfig: SessionConfig = {
+    defaultAccessMode: neo4j.session.READ,
+  };
+  if (isNotNil(database)) {
+    sessionConfig.database = database;
+  }
+  return getNeo4jDriver().session(sessionConfig);
 }
 
-/**
- * Get a write session
- */
 export function getWriteSession(): Session {
-  return getNeo4jDriver().session({ defaultAccessMode: neo4j.session.WRITE });
+  const sessionConfig: SessionConfig = {
+    defaultAccessMode: neo4j.session.WRITE,
+  };
+  if (isNotNil(database)) {
+    sessionConfig.database = database;
+  }
+  return getNeo4jDriver().session(sessionConfig);
 }
 
-/**
- * Execute a function with a session that automatically closes
- */
 export async function withSession<T>(
   callback: (session: Session) => Promise<T>,
   accessMode: "READ" | "WRITE" = "READ",

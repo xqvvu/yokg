@@ -1,44 +1,42 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 
-const skippedDirs = new Set([
+const skips = new Set([
+  "openspec",
   ".git",
   ".idea",
   ".vscode",
   ".cursor",
   ".claude",
   ".DS_Store",
-  "openspec",
 ]);
 
-function isNodeModules(name: string) {
+function isNodeModules(name: string): name is "node_modules" {
   return name === "node_modules";
 }
 
-async function removeDirectory(dirPath: string) {
-  console.info(`🧹 Start delete ${dirPath}`);
-  await fs.rm(dirPath, { recursive: true, force: true });
-  console.info(`⭕ Deleted ${dirPath}`);
+async function remove(nodeModules: string) {
+  console.info(`🧹 Start delete ${nodeModules}`);
+  await fs.rm(nodeModules, { recursive: true, force: true });
+  console.info(`⭕ Deleted ${nodeModules}`);
 }
 
-async function scanAndClean(dir: string) {
+async function scan(dir: string, paths: string[]) {
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true });
-    const promises = [];
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
 
-      const fullPath = path.join(dir, entry.name);
+      const fullpath = path.join(dir, entry.name);
 
       if (isNodeModules(entry.name)) {
-        promises.push(removeDirectory(fullPath));
-      } else if (!skippedDirs.has(entry.name)) {
-        promises.push(scanAndClean(fullPath));
+        paths.push(fullpath);
+      } else if (!skips.has(entry.name)) {
+        await scan(fullpath, paths);
       }
     }
-
-    await Promise.all(promises);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error(`❌ Error access ${dir}:`, message);
@@ -46,11 +44,15 @@ async function scanAndClean(dir: string) {
 }
 
 async function main() {
-  const projectRoot = path.resolve(import.meta.dirname, "..");
+  const root = path.resolve(import.meta.dirname, "..");
+  const paths: string[] = [];
 
-  console.info(`🧹 Start cleanup from: ${projectRoot}`);
-  await scanAndClean(projectRoot);
-  console.info("✅ Cleanup completed");
+  console.info(`🧹 Start cleanup from: ${root}`);
+  const start = performance.now();
+  await scan(root, paths);
+  await Promise.all(paths.map((nodeModules) => remove(nodeModules)));
+  const elapsed = performance.now() - start;
+  console.info("✅ Cleanup completed, it took %dms", elapsed.toFixed(2));
 }
 
-await main();
+main();

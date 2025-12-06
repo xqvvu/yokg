@@ -71,25 +71,25 @@ check:
 # Start docker compose services (postgres)
 [group('compose')]
 compose-up:
-    docker compose -f {{ docker_compose_dir }}/compose.local.yml up -d --wait
+    docker compose -f {{ docker_compose_dir }}/compose.yml up -d
     @echo "✓ Services started"
 
 # Stop docker compose services (keeps containers)
 [group('compose')]
 compose-stop:
-    docker compose -f {{ docker_compose_dir }}/compose.local.yml stop
+    docker compose -f {{ docker_compose_dir }}/compose.yml stop
     @echo "✓ Services stopped"
 
 # Stop and remove docker compose services
 [group('compose')]
 compose-down:
-    docker compose -f {{ docker_compose_dir }}/compose.local.yml down
+    docker compose -f {{ docker_compose_dir }}/compose.yml down
     @echo "✓ Services stopped and removed"
 
 # View docker compose logs
 [group('compose')]
 compose-logs:
-    docker compose -f {{ docker_compose_dir }}/compose.local.yml logs -f
+    docker compose -f {{ docker_compose_dir }}/compose.yml logs -f
 
 # Stop services and clean data
 [group('compose')]
@@ -104,13 +104,13 @@ compose-clean: compose-down
 # Start test database services and wait for health checks
 [group('test')]
 test-compose-up:
-    docker compose --env-file {{ docker_compose_dir }}/.env.test -f {{ docker_compose_dir }}/compose.test.yml up -d --wait
+    docker compose --env-file {{ docker_compose_dir }}/.env.test -f {{ docker_compose_dir }}/compose.yml up -d --wait
     @echo "✓ Test services started and healthy (postgres: 5433, redis: 6380)"
 
 # Stop test database services
 [group('test')]
 test-compose-down:
-    docker compose -f {{ docker_compose_dir }}/compose.test.yml down
+    docker compose -f {{ docker_compose_dir }}/compose.yml down
     @echo "✓ Test services stopped"
 
 # Clean test database data
@@ -254,12 +254,12 @@ backend-start:
 # Clean node_modules recursively
 [group('scripts')]
 script-clean-node-modules:
-    node scripts/clean-node-modules.js
+    pnpm tsx scripts/clean-node-modules.ts
 
 # Verify error translations
 [group('scripts')]
 script-verify-error-translations:
-    node scripts/verify-error-translations.js
+    pnpm tsx scripts/verify-error-translations.ts
 
 ##################################################
 # All-in-One
