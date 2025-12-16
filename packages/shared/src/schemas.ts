@@ -1,10 +1,10 @@
-import * as auth from "./tables/auth";
+import { accounts, sessions, users, verifications } from "./tables/auth";
 
 export const schema = {
-  // DO NOT modify `./tables/auth.ts`
-  // which is AUTO genereated by 'better-auth'
-  ...auth,
-};
+  accounts,
+  sessions,
+  users,
+  verifications,
+} as const;
 
-// Export individual schemas for easier imports
-export * from "./tables/auth";
+export { accounts, sessions, users, verifications } from "./tables/auth";

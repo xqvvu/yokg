@@ -3,6 +3,7 @@ import type { AnyWebReadableStream, FileTypeResult } from "file-type";
 import {
   fileTypeFromBlob,
   fileTypeFromBuffer,
+  fileTypeFromFile,
   fileTypeFromStream,
 } from "file-type";
 
@@ -23,11 +24,13 @@ type DetectFileTypeParams =
   | {
       from: "blob";
       file: Blob | File;
+    }
+  | {
+      from: "path";
+      file: string;
     };
 
-export async function detectFileType(
-  params: DetectFileTypeParams,
-): Promise<FileType> {
+export async function detectFileType(params: DetectFileTypeParams): Promise<FileType> {
   let result: FileTypeResult | undefined;
 
   switch (params.from) {
@@ -43,6 +46,11 @@ export async function detectFileType(
 
     case "blob": {
       result = await fileTypeFromBlob(params.file);
+      break;
+    }
+
+    case "path": {
+      result = await fileTypeFromFile(params.file);
       break;
     }
   }

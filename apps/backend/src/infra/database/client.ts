@@ -1,9 +1,9 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { schema } from "@graph-mind/shared/schemas";
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { isNil, isNotNil } from "es-toolkit";
 import { SystemException } from "@/exceptions/system-exception";
-import { getLogger, infra } from "@/infra/logger";
+import { getDbLogger } from "@/infra/database/helpers";
 import { getConfig } from "@/lib/config";
 
 export type DB = ReturnType<typeof drizzle<typeof schema>>;
@@ -13,9 +13,8 @@ let db: DB | null = null;
 export async function configure() {
   if (isNil(db)) {
     const config = getConfig();
-    const logger = getLogger(infra.database);
 
-    logger.info`Initialize database`;
+    getDbLogger().info("Database connect");
 
     db = drizzle({
       schema,

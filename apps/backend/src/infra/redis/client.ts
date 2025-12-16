@@ -2,33 +2,33 @@ import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { isError, isNil, isNotNil } from "es-toolkit";
 import { createClient } from "redis";
 import { SystemException } from "@/exceptions/system-exception";
-import { getLogger, infra } from "@/infra/logger";
+import { getRedisLogger } from "@/infra/redis/helpers";
 import { getConfig } from "@/lib/config";
 
 export type RDB = ReturnType<typeof createClient>;
 
-let rdb: RDB | null = null;
+let redis: RDB | null = null;
 
 export async function configure() {
-  if (isNil(rdb)) {
+  if (isNil(redis)) {
     const config = getConfig();
-    const logger = getLogger(infra.redis);
+    const redisLogger = getRedisLogger();
 
-    rdb = createClient({
+    redis = createClient({
       RESP: 3,
       url: config.redisUrl,
       maintNotifications: "disabled",
     });
 
-    rdb.on("connect", function redisConnectHandler() {
-      logger.info`Connect to redis`;
+    redis.on("connect", function redisConnectHandler() {
+      redisLogger.info("Connect to redis");
     });
 
-    rdb.on("ready", function redisConnectHandler() {
-      logger.info`Redis is ready`;
+    redis.on("ready", function redisConnectHandler() {
+      redisLogger.info("Redis is ready");
     });
 
-    rdb.on("error", function redisErrorHandler(err: AggregateError | Error) {
+    redis.on("error", function redisErrorHandler(err: AggregateError | Error) {
       if (err instanceof AggregateError) {
         throw new SystemException({
           errcode: ErrorCode.INTERNAL_ERROR,
@@ -42,24 +42,24 @@ export async function configure() {
       }
     });
 
-    await rdb.connect();
+    await redis.connect();
   }
 }
 
-export function getRdb() {
-  if (isNil(rdb)) {
+export function getRedis() {
+  if (isNil(redis)) {
     throw new SystemException({
       errcode: ErrorCode.INTERNAL_ERROR,
       message: "Redis has not been initialized yet",
     });
   }
 
-  return rdb;
+  return redis;
 }
 
 export async function destroyRdb() {
-  if (isNotNil(rdb)) {
-    rdb.destroy();
-    rdb = null;
+  if (isNotNil(redis)) {
+    redis.destroy();
+    redis = null;
   }
 }

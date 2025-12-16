@@ -5,7 +5,6 @@ import { cors } from "hono/cors";
 import { HTTPException } from "hono/http-exception";
 import { requestId } from "hono/request-id";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { ZodError, z } from "zod";
 import { BusinessException } from "@/exceptions/business-exception";
 import { SystemException } from "@/exceptions/system-exception";
 import type { Config } from "@/lib/config";
@@ -13,8 +12,6 @@ import { getConfig } from "@/lib/config";
 import { R } from "@/lib/http";
 import { logger } from "@/middlewares/logger";
 import { auth } from "@/modules/auth/auth.route";
-import { graph } from "@/modules/graph/graph.route";
-import { llm } from "@/modules/llm/llm.route";
 import { users } from "@/modules/users/users.route";
 
 type App = Readonly<Hono<Env>>;
@@ -40,10 +37,10 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------routes----------------------------//
+  app.get("/api/healthz", (c) => R.ok(c, "ok"));
+
   app.route("/api", auth);
   app.route("/api", users);
-  app.route("/api", llm);
-  app.route("/api", graph);
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------event handlers--------------------//
@@ -69,17 +66,6 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
       return R.fail(c, {
         errcode: err.errcode,
         errmsg: err.message || "System exception",
-      });
-    }
-
-    // Handle ZodError - validation errors (log at warn level)
-    if (err instanceof ZodError) {
-      const prettyError = z.prettifyError(err);
-      logger.warn`Zod validation error: ${prettyError}`;
-      c.status(400);
-      return R.fail(c, {
-        errcode: ErrorCode.INVALID_REQUEST,
-        errmsg: prettyError,
       });
     }
 

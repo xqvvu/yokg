@@ -21,6 +21,26 @@ services:
       timeout: 5s
       retries: 5
 
+  age:
+    image: apache/age:release_PG17_1.6.0
+    ports:
+      - ${AGE_PORT:-5455}:5432
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      POSTGRES_DB: ${AGE:-graph}
+      POSTGRES_USER: ${AGE_USER:-postgres}
+      POSTGRES_PASSWORD: ${AGE_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - ./.docker/age:/var/lib/postgresql
+    networks:
+      - graph-mind
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', '${AGE_USER:-postgres}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis:8.4-bookworm
     ports:
@@ -37,69 +57,8 @@ services:
       timeout: 3s
       retries: 5
 
-  neo4j:
-    image: neo4j:5.26-community-bullseye
-    ports:
-      - ${NEO4J_HTTP_PORT:-7474}:7474
-      - ${NEO4J_BOLT_PORT:-7687}:7687
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
-      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD}
-      NEO4J_dbms_default__database: ${NEO4J_DATABASE:-graph-mind}
-      NEO4J_PLUGINS: '["apoc"]'
-      NEO4J_dbms_memory_heap_initial__size: 512m
-      NEO4J_dbms_memory_heap_max__size: 1g
-    restart: unless-stopped
-    volumes:
-      - ./.docker/neo4j/data:/data
-      - ./.docker/neo4j/plugins:/plugins
-      - ./.docker/neo4j/logs:/logs
-    networks:
-      - graph-mind
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'cypher-shell',
-          '-u',
-          '${NEO4J_USER:-neo4j}',
-          '-p',
-          '${NEO4J_PASSWORD}',
-          'MATCH (n) RETURN count(n) AS count',
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  milvus:
-    image: milvusdb/milvus:v2.6.6
-    ports:
-      - ${MILVUS_PORT:-19530}:19530
-      - ${MILVUS_METRICS_PORT:-9091}:9091
-      - ${MILVUS_ETCD_PORT:-2379}:2379
-    environment:
-      ETCD_USE_EMBED: true
-      ETCD_DATA_DIR: /var/lib/milvus/etcd
-      ETCD_CONFIG_PATH: /milvus/configs/embedEtcd.yaml
-      COMMON_STORAGETYPE: local
-      DEPLOY_MODE: STANDALONE
-    restart: unless-stopped
-    volumes:
-      - ./.docker/milvus/data:/var/lib/milvus
-      - ./.docker/milvus/configs/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml
-      - ./.docker/milvus/configs/user.yaml:/milvus/configs/user.yaml
-    command: ['milvus', 'run', 'standalone']
-    networks:
-      - graph-mind
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9091/healthz']
-      interval: 30s
-      timeout: 20s
-      start_period: 90s
-      retries: 3
-
   rustfs:
-    image: rustfs/rustfs:1.0.0-alpha.72
+    image: rustfs/rustfs:1.0.0-alpha.73
     ports:
       - ${OBJECT_STORAGE_VENDOR_API_PORT:-9000}:9000
       - ${OBJECT_STORAGE_VENDOR_CONSOLE_PORT:-9001}:9001
@@ -124,6 +83,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
 networks:
   graph-mind:
     driver: bridge

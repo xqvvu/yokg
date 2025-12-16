@@ -1,5 +1,5 @@
 import path from "node:path";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { getDb } from "@/infra/database";
 import { prepare } from "@/main";
 

@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@graph-mind/shared": "workspace:*",
-    "ky": "^1.14.0"
+    "ky": "^1.14.1"
   }
 }

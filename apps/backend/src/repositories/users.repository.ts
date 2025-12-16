@@ -3,51 +3,49 @@ import type { nil } from "@graph-mind/shared/types/utils";
 import type { IUser } from "@graph-mind/shared/validate/users";
 import { eq } from "drizzle-orm";
 import { isNil, isNotNil } from "es-toolkit";
-import type { DB } from "@/infra/database";
-import { getDb } from "@/infra/database";
-import { getLogger, infra } from "@/infra/logger";
-import type { RDB } from "@/infra/redis";
-import { getRdb } from "@/infra/redis";
+import { getDb, getDbLogger } from "@/infra/database";
+import { getRedis, getRedisLogger } from "@/infra/redis";
 import { RedisKeyFactory } from "@/infra/redis/keys";
 import { RedisTTLCalculator } from "@/infra/redis/ttl";
 import type { IUserRepository } from "./users.repository.interface";
 
 export class UserRepository implements IUserRepository {
   constructor(
-    private db: DB,
-    private rdb: RDB,
+    protected readonly db = getDb(),
+    protected readonly redis = getRedis(),
   ) {}
 
   async findById(id: string): Promise<IUser | null> {
-    const dbLogger = getLogger(infra.database);
-    const rdbLogger = getLogger(infra.redis);
     const factory = new RedisKeyFactory();
+    const dbLogger = getDbLogger();
+    const redisLogger = getRedisLogger();
+
     const key = factory.users.byId(id);
 
-    const cache = (await this.rdb.json.get(key)) as IUser | nil;
+    const cache = (await this.redis.json.get(key)) as IUser | nil;
     if (isNotNil(cache)) {
-      rdbLogger.debug`Cache hit for user ${id}`;
+      redisLogger.debug(`Cache hit for user ${id}`);
       return cache;
     }
 
-    rdbLogger.debug`Cache miss for user ${id}`;
+    redisLogger.debug(`Cache miss for user ${id}`);
 
-    dbLogger.debug`Query user by id ${id}`;
+    dbLogger.debug(`Query user by id ${id}`);
     const user = await this.db.query.users.findFirst({
       where: eq(users.id, id),
     });
 
     if (isNotNil(user)) {
-      rdbLogger.debug`Cache user ${id}`;
+      redisLogger.debug(`Cache user ${id}`);
       const ttl = new RedisTTLCalculator();
-      this.rdb
+      this.redis
         .multi()
         .json.set(key, "$", user)
         .expire(key, ttl.$1_hour)
         .exec()
         .catch((err: unknown) => {
           const message = err instanceof Error ? err.message : "unknown error";
-          rdbLogger.warn`Cache write failed for user ${id}: ${message}`;
+          redisLogger.warn(`Cache write failed for user ${id}: ${message}`);
         });
     }
 
@@ -55,8 +53,9 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
-    const dbLogger = getLogger(infra.database);
-    dbLogger.debug`Query user by email`;
+    const dbLogger = getDbLogger();
+
+    dbLogger.debug("Query user by email");
     const user = await this.db.query.users.findFirst({
       where: eq(users.email, email),
     });
@@ -65,27 +64,24 @@ export class UserRepository implements IUserRepository {
   }
 
   async findMany(): Promise<IUser[]> {
-    const dbLogger = getLogger(infra.database);
-    dbLogger.debug`Query all users`;
+    getDbLogger().debug("Query all users");
     return await this.db.query.users.findMany();
   }
 
   async delete(id: string): Promise<void> {
-    const dbLogger = getLogger(infra.database);
-    dbLogger.info`Delete user ${id}`;
+    getDbLogger().info(`Delete user ${id}`);
     await this.db.delete(users).where(eq(users.id, id));
 
     const factory = new RedisKeyFactory();
-    const rdbLogger = getLogger(infra.redis);
-    rdbLogger.debug`Invalidate cache for user ${id}`;
-    await this.rdb.del(factory.users.byId(id));
+    getRedisLogger().debug(`Invalidate cache for user ${id}`);
+    await this.redis.del(factory.users.byId(id));
   }
 }
 
 let userRepository: IUserRepository | null = null;
 export function getUserRepository(): IUserRepository {
   if (isNil(userRepository)) {
-    userRepository = new UserRepository(getDb(), getRdb());
+    userRepository = new UserRepository();
   }
   return userRepository;
 }

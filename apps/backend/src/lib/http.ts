@@ -1,6 +1,6 @@
 import { createServerKy } from "@graph-mind/ky/server";
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import type { Result } from "@graph-mind/shared/types/result";
+import type { Result } from "@graph-mind/shared/types/http";
 import { isError, isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
 import { SystemException } from "@/exceptions/system-exception";
@@ -44,11 +44,7 @@ type CloneAndFormatJSONResponseInit =
       mode: "append";
       status?: number | undefined;
       statusText?: string | undefined;
-      headers?:
-        | [string, string][]
-        | Record<string, string>
-        | Headers
-        | undefined;
+      headers?: [string, string][] | Record<string, string> | Headers | undefined;
     }
   | {
       mode: "overwrite";
@@ -79,16 +75,11 @@ export async function cloneAndFormatJSONResponse(
     }
 
     const data = await clonedResponse.json();
-    return new Response(
-      isNil(data) ? null : JSON.stringify(R.raw({ ok: true, data })),
-      {
-        headers,
-        status: isNil(init?.status) ? response.status : init.status,
-        statusText: isNil(init?.statusText)
-          ? response.statusText
-          : init.statusText,
-      },
-    );
+    return new Response(isNil(data) ? null : JSON.stringify(R.raw({ ok: true, data })), {
+      headers,
+      status: isNil(init?.status) ? response.status : init.status,
+      statusText: isNil(init?.statusText) ? response.statusText : init.statusText,
+    });
   } catch (error) {
     const message = isError(error) ? error.message : "unknown error";
     throw new SystemException({

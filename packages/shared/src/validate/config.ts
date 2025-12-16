@@ -19,9 +19,19 @@ export const BasicConfigSchema = z.object({
   // PostgreSQL
   POSTGRES_PORT: PortSchema.default(5432),
   POSTGRES_HOST: z.string().default("localhost"),
-  POSTGRES_DB: z.string().default("graph-mind"),
+  POSTGRES_DB: z.string().default("core"),
   POSTGRES_USER: z.string().default("postgres"),
   POSTGRES_PASSWORD: z.string().nonempty(),
+
+  // Apache AGE
+  AGE_PORT: PortSchema.default(5455),
+  AGE_HOST: z.string().default("localhost"),
+  AGE_DB: z.string().default("graph"),
+  AGE_USER: z.string().default("postgres"),
+  AGE_PASSWORD: z.string().nonempty(),
+  AGE_POOL_MAX_CONNECTIONS: z.coerce.number<number>().int().positive().default(10),
+  AGE_POOL_IDLE_TIMEOUT_MS: z.coerce.number<number>().int().positive().default(10000),
+  AGE_POOL_MAX_LIFETIME_SECONDS: z.coerce.number<number>().int().positive().default(36000),
 
   // Redis
   REDIS_PORT: PortSchema.default(6379),
@@ -29,27 +39,9 @@ export const BasicConfigSchema = z.object({
   REDIS_DB: z.coerce.number<number>().int().min(0).default(0),
   REDIS_PASSWORD: z.string().nonempty(),
 
-  // Neo4j
-  NEO4J_HTTP_PORT: PortSchema.default(7474),
-  NEO4J_BOLT_PORT: PortSchema.default(7687),
-  NEO4J_HOST: z.string().default("localhost"),
-  NEO4J_USER: z.string().default("neo4j"),
-  NEO4J_PASSWORD: z.string().nonempty(),
-  NEO4J_DB: z.string().default("graph-mind"),
-  NEO4J_MAX_CONNECTION_POOL_SIZE: z.coerce
-    .number<number>()
-    .int()
-    .positive()
-    .default(50),
-  NEO4J_CONNECTION_TIMEOUT: z.coerce
-    .number<number>()
-    .int()
-    .positive()
-    .default(30000),
-
   // Object Storage
   OBJECT_STORAGE_VENDOR: z
-    .enum(["rustfs", "aws-s3", "minio", "r2", "oss", "memory"])
+    .enum(["rustfs", "aws-s3", "minio", "r2", "oss", "cos", "memory"])
     .default("rustfs"),
   OBJECT_STORAGE_ACCESS_KEY: z.string().nonempty(),
   OBJECT_STORAGE_SECRET_KEY: z.string().nonempty(),
@@ -74,11 +66,11 @@ export const InterpolatedConfigSchema = z.object({
   // PostgreSQL
   DATABASE_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
 
+  // Apache AGE
+  AGE_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
+
   // Redis
   REDIS_URL: z.string().regex(/^redis{1,2}?:\/\//),
-
-  // Neo4j
-  NEO4J_URI: z.string().regex(/^neo4j(\+s)?:\/\//),
 
   // BetterAuth
   BETTER_AUTH_URL: z.url(),

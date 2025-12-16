@@ -1,10 +1,31 @@
-import { zValidator } from "@hono/zod-validator";
+import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { sValidator } from "@hono/standard-validator";
+import { isNotNil } from "es-toolkit";
 import type { ZodType } from "zod";
+import { BusinessException } from "@/exceptions/business-exception";
 
-export const validator = <T extends ZodType>(
-  type: Parameters<typeof zValidator>[0],
-  schema: T,
-) =>
-  zValidator(type, schema, (result) => {
-    if (!result.success) throw result.error;
+export function validator<T extends ZodType>(type: Parameters<typeof sValidator>[0], schema: T) {
+  return sValidator(type, schema, (result) => {
+    if (!result.success) {
+      const issues = result.error;
+      if (issues.length === 0) {
+        throw new BusinessException(400, {
+          errcode: ErrorCode.INVALID_REQUEST,
+          message: "Invalid request",
+        });
+      }
+
+      const paths = [];
+      for (const issue of issues) {
+        if (issue.path) {
+          paths.push(...issue.path.flat());
+        }
+      }
+      const fields = Array.from(new Set(paths)).filter(isNotNil).join(", ");
+      throw new BusinessException(400, {
+        errcode: ErrorCode.INVALID_REQUEST,
+        message: `Invalid parameters, please check: ${fields}`,
+      });
+    }
   });
+}

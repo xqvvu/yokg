@@ -1,16 +1,24 @@
-import type { IObjectStorageRepository } from "@/infra/object-storage/interface";
+import type { IObjectStorage } from "@/infra/storage/interface";
 import type {
-  EnsureBucketParams,
+  EnsureBucketResult,
+  GeneratePresignedPutUrlParams,
+  GeneratePresignedPutUrlResult,
   UploadObjectParams,
-} from "@/infra/object-storage/types";
+} from "@/infra/storage/types";
 
 // TODO: implement memory adapter
-export class MemoryStorageAdapter implements IObjectStorageRepository {
-  ensureBucket(params: EnsureBucketParams): Promise<void> {
+export class MemoryStorageAdapter implements IObjectStorage {
+  ensureBucket(): Promise<EnsureBucketResult> {
     throw new Error("Method not implemented.");
   }
 
   uploadObject(params: UploadObjectParams): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  generatePresignedPutUrl(
+    params: GeneratePresignedPutUrlParams,
+  ): Promise<GeneratePresignedPutUrlResult> {
     throw new Error("Method not implemented.");
   }
 

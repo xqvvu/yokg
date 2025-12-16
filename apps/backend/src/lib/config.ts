@@ -1,13 +1,7 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Method } from "@graph-mind/shared/types/http";
-import type {
-  BasicConfigInit,
-  InterpolatedConfigInit,
-} from "@graph-mind/shared/validate/config";
-import {
-  BasicConfigSchema,
-  InterpolatedConfigSchema,
-} from "@graph-mind/shared/validate/config";
+import type { BasicConfigInit, InterpolatedConfigInit } from "@graph-mind/shared/validate/config";
+import { BasicConfigSchema, InterpolatedConfigSchema } from "@graph-mind/shared/validate/config";
 import { isNil, pick } from "es-toolkit";
 import { ZodError } from "zod";
 import { SystemException } from "@/exceptions/system-exception";
@@ -19,9 +13,9 @@ function interpolate(basicConfig: BasicConfigInit): InterpolatedConfigInit {
     ...pick(process.env as Partial<InterpolatedConfigInit>, [
       "DATABASE_URL",
       "REDIS_URL",
-      "NEO4J_URI",
       "BETTER_AUTH_URL",
       "OBJECT_STORAGE_ENDPOINT",
+      "AGE_URL",
     ]),
   };
 
@@ -51,56 +45,35 @@ function interpolate(basicConfig: BasicConfigInit): InterpolatedConfigInit {
   return config as InterpolatedConfigInit;
 }
 
-let env: ConfigInit | null = null;
 function prepare() {
-  if (isNil(env)) {
-    try {
-      const basicConfig = BasicConfigSchema.parse(process.env);
-      let interpolatedConfig = interpolate(basicConfig);
-      interpolatedConfig = InterpolatedConfigSchema.parse(interpolatedConfig);
-      env = {
-        ...basicConfig,
-        ...interpolatedConfig,
-      };
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const paths = error.issues.flatMap((issue) => issue.path).join(", ");
-        throw new SystemException({
-          errcode: ErrorCode.INTERNAL_ERROR,
-          message: `Invalid configuration detected. Please check these environment variables: ${paths}`,
-        });
-      }
-      throw error;
+  try {
+    const basicConfig = BasicConfigSchema.parse(process.env);
+    let interpolatedConfig = interpolate(basicConfig);
+    interpolatedConfig = InterpolatedConfigSchema.parse(interpolatedConfig);
+    return {
+      ...basicConfig,
+      ...interpolatedConfig,
+    };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const paths = error.issues.flatMap((issue) => issue.path).join(", ");
+      throw new SystemException({
+        errcode: ErrorCode.INTERNAL_ERROR,
+        message: `Invalid configuration detected. Please check these environment variables: ${paths}`,
+      });
     }
+    throw error;
   }
-
-  return env;
 }
 
 export class Config {
-  private constructor(private readonly env: ConfigInit = prepare()) {}
   private static instance: Config | null = null;
-  static getInstance() {
-    if (isNil(Config.instance)) {
-      Config.instance = new Config();
-    }
-
-    return Config.instance;
-  }
 
   // Server
-  get isDevelopmentNodeEnv() {
-    return this.env.NODE_ENV === "development";
-  }
-  get isProductionNodeEnv() {
-    return !this.isDevelopmentNodeEnv;
-  }
-  get port() {
-    return this.env.PORT;
-  }
-  get corsAllowedOrigins() {
-    return this.env.CORS_ALLOWED_ORIGINS;
-  }
+  readonly port: number;
+  readonly locale: string;
+  readonly timezone: string;
+  readonly corsAllowedOrigins: string[];
   readonly corsAllowedMethods = [
     "GET",
     "POST",
@@ -109,79 +82,70 @@ export class Config {
     "PATCH",
     "OPTIONS",
   ] satisfies Method[];
-  readonly corsAllowedHeaders = [
-    "Accept",
-    "Origin",
-    "X-CSRF-Token",
-    "Content-Type",
-    "Authorization",
-  ];
-  get locale() {
-    return this.env.LOCALE;
-  }
-  get timezone() {
-    return this.env.TZ;
-  }
-
-  // PostgreSQL
-  get databaseUrl() {
-    return this.env.DATABASE_URL;
-  }
-
-  // Redis
-  get redisUrl() {
-    return this.env.REDIS_URL;
-  }
-
-  // Neo4j
-  get neo4jUri() {
-    return this.env.NEO4J_URI;
-  }
-  get neo4jUser() {
-    return this.env.NEO4J_USER;
-  }
-  get neo4jPassword() {
-    return this.env.NEO4J_PASSWORD;
-  }
-  get neo4jDatabase() {
-    return this.env.NEO4J_DB;
-  }
-  get neo4jMaxConnectionPoolSize() {
-    return this.env.NEO4J_MAX_CONNECTION_POOL_SIZE;
-  }
-  get neo4jConnectionTimeout() {
-    return this.env.NEO4J_CONNECTION_TIMEOUT;
-  }
+  corsAllowedHeaders = ["Accept", "Origin", "X-CSRF-Token", "Content-Type", "Authorization"];
+  readonly isDevelopmentNodeEnv: boolean;
+  readonly isTestNodeEnv: boolean;
+  readonly isProductionNodeEnv: boolean;
 
   // BetterAuth
-  get betterAuthUrl() {
-    return this.env.BETTER_AUTH_URL;
-  }
+  readonly betterAuthUrl: string;
+
+  // PostgreSQL
+  readonly databaseUrl: string;
+
+  // Apache AGE
+  readonly ageUrl: string;
+  readonly agePoolMaxConnections: number;
+  readonly agePoolIdleTimeoutMillis: number;
+  readonly agePoolMaxLifetimeSeconds: number;
+
+  // Redis
+  readonly redisUrl: string;
 
   // Object Storage
-  get objectStorageVendor() {
-    return this.env.OBJECT_STORAGE_VENDOR;
+  readonly objectStorageVendor: "aws-s3" | "rustfs" | "minio" | "r2" | "oss" | "cos" | "memory";
+  readonly objectStorageEndpoint: string;
+  readonly objectStorageAccessKey: string;
+  readonly objectStorageSecretKey: string;
+  readonly objectStorageRegion: string;
+  readonly objectStorageForcePathStyle: boolean;
+  readonly objectStoragePublicBucketName: string;
+  readonly objectStoragePrivateBucketName: string;
+
+  private constructor() {
+    const env = prepare();
+
+    this.port = env.PORT;
+    this.locale = env.LOCALE;
+    this.timezone = env.TZ;
+    this.corsAllowedOrigins = env.CORS_ALLOWED_ORIGINS;
+    this.isDevelopmentNodeEnv = env.NODE_ENV === "development";
+    this.isTestNodeEnv = env.NODE_ENV === "test";
+    this.isProductionNodeEnv = !this.isDevelopmentNodeEnv && !this.isTestNodeEnv;
+
+    this.betterAuthUrl = env.BETTER_AUTH_URL;
+
+    this.databaseUrl = env.DATABASE_URL;
+
+    this.ageUrl = env.AGE_URL;
+    this.agePoolMaxConnections = env.AGE_POOL_MAX_CONNECTIONS;
+    this.agePoolIdleTimeoutMillis = env.AGE_POOL_IDLE_TIMEOUT_MS;
+    this.agePoolMaxLifetimeSeconds = env.AGE_POOL_MAX_LIFETIME_SECONDS;
+
+    this.redisUrl = env.REDIS_URL;
+
+    this.objectStorageVendor = env.OBJECT_STORAGE_VENDOR;
+    this.objectStorageEndpoint = env.OBJECT_STORAGE_ENDPOINT;
+    this.objectStorageAccessKey = env.OBJECT_STORAGE_ACCESS_KEY;
+    this.objectStorageSecretKey = env.OBJECT_STORAGE_SECRET_KEY;
+    this.objectStorageRegion = env.OBJECT_STORAGE_REGION;
+    this.objectStorageForcePathStyle = env.OBJECT_STORAGE_FORCE_PATH_STYLE;
+    this.objectStoragePublicBucketName = env.OBJECT_STORAGE_PUBLIC_BUCKET_NAME;
+    this.objectStoragePrivateBucketName = env.OBJECT_STORAGE_PRIVATE_BUCKET_NAME;
   }
-  get objectStorageEndpoint() {
-    return this.env.OBJECT_STORAGE_ENDPOINT;
-  }
-  get objectStorageAccessKey() {
-    return this.env.OBJECT_STORAGE_ACCESS_KEY;
-  }
-  get objectStorageSecretKey() {
-    return this.env.OBJECT_STORAGE_SECRET_KEY;
-  }
-  get objectStorageRegion() {
-    return this.env.OBJECT_STORAGE_REGION;
-  }
-  get objectStorageForcePathStyle() {
-    return this.env.OBJECT_STORAGE_FORCE_PATH_STYLE;
-  }
-  get objectStoragePublicBucketName() {
-    return this.env.OBJECT_STORAGE_PUBLIC_BUCKET_NAME;
-  }
-  get objectStoragePrivateBucketName() {
-    return this.env.OBJECT_STORAGE_PRIVATE_BUCKET_NAME;
+
+  static getInstance() {
+    return Config.instance ?? new Config();
   }
 }
 

@@ -5,7 +5,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isNil } from "es-toolkit";
 import { SystemException } from "@/exceptions/system-exception";
 import { getDb } from "@/infra/database";
-import { external, getLogger } from "@/infra/logger";
+import { betterAuth as betterAuthCategory, getLogger } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
 let auth: ReturnType<typeof betterAuth> | null = null;
@@ -14,7 +14,7 @@ export async function configure() {
   if (isNil(auth)) {
     const db = getDb();
     const config = getConfig();
-    const logger = getLogger(external.betterAuth);
+    const logger = getLogger(betterAuthCategory);
 
     auth = betterAuth({
       baseURL: config.betterAuthUrl,
@@ -26,8 +26,8 @@ export async function configure() {
         camelCase: false,
       }),
       logger: {
-        log(_level, message, ...args) {
-          logger.debug(message, ...args);
+        log(level, message, ...args) {
+          logger[level](message, ...args);
         },
       },
       advanced: {
