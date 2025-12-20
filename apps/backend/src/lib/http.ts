@@ -3,7 +3,7 @@ import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Result } from "@graph-mind/shared/types/http";
 import { isError, isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
-import { SystemException } from "@/exceptions/system-exception";
+import { SystemError } from "@/errors/system-error";
 
 export const R = {
   raw<T = unknown>(params: {
@@ -82,7 +82,7 @@ export async function cloneAndFormatJSONResponse(
     });
   } catch (error) {
     const message = isError(error) ? error.message : "unknown error";
-    throw new SystemException({
+    throw new SystemError({
       errcode: ErrorCode.INTERNAL_ERROR,
       message: `Clone JSON response failed: ${message}`,
     });

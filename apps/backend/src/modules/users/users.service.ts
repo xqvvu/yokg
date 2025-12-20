@@ -1,7 +1,7 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { IUser } from "@graph-mind/shared/validate/users";
 import { isNil, isNotNil } from "es-toolkit";
-import { BusinessException } from "@/exceptions/business-exception";
+import { BusinessError } from "@/errors/business-error";
 import { getLogger, mod } from "@/infra/logger";
 import { getUserRepository } from "@/repositories/users.repository";
 import type { IUserRepository } from "@/repositories/users.repository.interface";
@@ -24,7 +24,7 @@ export class UserService {
 
     if (isNil(user)) {
       logger.debug`User not found: ${id}`;
-      throw new BusinessException(404, {
+      throw new BusinessError(404, {
         errcode: ErrorCode.USER.NOT_FOUND,
         message: "User not found",
       });

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const PortSchema = z.coerce.number<number>().int().min(1).max(65535);
 
-export const BasicConfigSchema = z.object({
+export const ConfigInitSchema = z.object({
   // Server
   NODE_ENV: z.string().optional(),
   PORT: PortSchema.default(10001),
@@ -50,46 +50,25 @@ export const BasicConfigSchema = z.object({
   REDIS_PASSWORD: z.string().nonempty(),
 
   // Object Storage
-  OBJECT_STORAGE_VENDOR: z
+  STORAGE_VENDOR: z
     .enum(["rustfs", "aws-s3", "minio", "r2", "oss", "cos", "memory"])
     .default("rustfs"),
-  OBJECT_STORAGE_ACCESS_KEY: z.string().nonempty(),
-  OBJECT_STORAGE_SECRET_KEY: z.string().nonempty(),
-  OBJECT_STORAGE_REGION: z.string().default("cn-east-1"),
-  OBJECT_STORAGE_PUBLIC_BUCKET_NAME: z.string().nonempty(),
-  OBJECT_STORAGE_PRIVATE_BUCKET_NAME: z.string().nonempty(),
-  OBJECT_STORAGE_FORCE_PATH_STYLE: z
+  STORAGE_ACCESS_KEY: z.string().nonempty(),
+  STORAGE_SECRET_KEY: z.string().nonempty(),
+  STORAGE_REGION: z.string().default("us-east-1"),
+  STORAGE_PUBLIC_BUCKET_NAME: z.string().nonempty(),
+  STORAGE_PRIVATE_BUCKET_NAME: z.string().nonempty(),
+  STORAGE_FORCE_PATH_STYLE: z
     .string()
     .transform((val) => val === "true")
     .pipe(z.boolean())
     .default(false),
-  OBJECT_STORAGE_VENDOR_API_PORT: PortSchema.default(9000),
-  OBJECT_STORAGE_VENDOR_CONSOLE_PORT: PortSchema.default(9001),
+  STORAGE_INTERNAL_ENDPOINT: z.url(),
+  STORAGE_EXTERNAL_ENDPOINT: z.url(),
 
   // BetterAuth
   BETTER_AUTH_SECRET: z.string().nonempty(),
-});
-
-export type BasicConfigInit = z.output<typeof BasicConfigSchema>;
-
-export const InterpolatedConfigSchema = z.object({
-  // PostgreSQL
-  DATABASE_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
-
-  // Apache AGE
-  AGE_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
-
-  // PgVector
-  PGVECTOR_URL: z.string().regex(/^postgres(?:ql)?:\/\//),
-
-  // Redis
-  REDIS_URL: z.string().regex(/^redis{1,2}?:\/\//),
-
-  // BetterAuth
   BETTER_AUTH_URL: z.url(),
-
-  // Object Storage
-  OBJECT_STORAGE_ENDPOINT: z.url(),
 });
 
-export type InterpolatedConfigInit = z.output<typeof InterpolatedConfigSchema>;
+export type ConfigInit = z.output<typeof ConfigInitSchema>;

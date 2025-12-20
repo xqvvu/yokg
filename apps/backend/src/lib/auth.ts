@@ -3,7 +3,7 @@ import { schema } from "@graph-mind/shared/schemas";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { isNil } from "es-toolkit";
-import { SystemException } from "@/exceptions/system-exception";
+import { SystemError } from "@/errors/system-error";
 import { getDb } from "@/infra/database";
 import { betterAuth as betterAuthCategory, getLogger } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
@@ -13,12 +13,12 @@ let auth: ReturnType<typeof betterAuth> | null = null;
 export async function configure() {
   if (isNil(auth)) {
     const db = getDb();
-    const config = getConfig();
+    const { server, isDevelopmentNodeEnv } = getConfig();
     const logger = getLogger(betterAuthCategory);
 
     auth = betterAuth({
-      baseURL: config.betterAuthUrl,
-      trustedOrigins: config.corsAllowedOrigins,
+      baseURL: server.betterAuthUrl,
+      trustedOrigins: server.corsAllowedOrigins,
       database: drizzleAdapter(db, {
         schema,
         provider: "pg",
@@ -26,12 +26,12 @@ export async function configure() {
         camelCase: false,
       }),
       logger: {
-        log(level, message, ...args) {
-          logger[level](message, ...args);
+        log(level, message) {
+          logger[level](message);
         },
       },
       advanced: {
-        disableOriginCheck: config.isDevelopmentNodeEnv,
+        disableOriginCheck: isDevelopmentNodeEnv,
       },
       experimental: {
         joins: true,
@@ -45,7 +45,7 @@ export async function configure() {
 
 export function getBetterAuth() {
   if (isNil(auth)) {
-    throw new SystemException({
+    throw new SystemError({
       errcode: ErrorCode.INTERNAL_ERROR,
       message: "BetterAuth has not been initialized yet",
     });

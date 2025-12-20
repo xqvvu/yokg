@@ -4,7 +4,7 @@ import type { Mocked } from "vitest";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockUsers, mockUserWithId } from "#test/fixtures/users.fixture";
 import { createMockedUserRepository } from "#test/mocks/users.repository.mock";
-import { BusinessException } from "@/exceptions/business-exception";
+import { BusinessError } from "@/errors/business-error";
 import { UserService } from "@/modules/users/users.service";
 import type { IUserRepository } from "@/repositories/users.repository.interface";
 
@@ -45,7 +45,7 @@ describe("UserService", () => {
 
       const action = userService.selectUserById(userId);
 
-      await expect(action).rejects.toBeInstanceOf(BusinessException);
+      await expect(action).rejects.toBeInstanceOf(BusinessError);
       await expect(action).rejects.toMatchObject({
         errcode: ErrorCode.USER.NOT_FOUND,
       });

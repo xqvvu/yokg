@@ -1,5 +1,4 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import {
   configure as configureLogTape,
   dispose as disposeLogTape,
@@ -8,7 +7,6 @@ import {
 } from "@logtape/logtape";
 import { getPrettyFormatter } from "@logtape/pretty";
 import dayjs from "dayjs";
-import { SystemException } from "@/exceptions/system-exception";
 import { getConfig } from "@/lib/config";
 import type { LogCategory } from "./categories";
 
@@ -57,6 +55,11 @@ export async function configure() {
         sinks: ["console"],
       },
       {
+        category: ["error"],
+        lowestLevel: "warning",
+        sinks: ["console"],
+      },
+      {
         category: ["http"],
         lowestLevel: "debug",
         sinks: ["console"],
@@ -91,10 +94,7 @@ export async function configure() {
 
 export function getLogger(category: LogCategory) {
   if (!configured) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Logger has not been initialized yet",
-    });
+    throw new Error("Logger is not ready");
   }
 
   return getLogTapeLogger(category);
@@ -107,6 +107,6 @@ export async function destroyLogger() {
   }
 }
 
-export { withContext } from "@logtape/logtape";
+export { type Logger, withContext } from "@logtape/logtape";
 export type { LogCategory } from "@/infra/logger/categories";
 export { betterAuth, http, infra, middleware, mod, root } from "@/infra/logger/categories";

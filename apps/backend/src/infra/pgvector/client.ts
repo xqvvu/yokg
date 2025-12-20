@@ -1,8 +1,7 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { isError, isNil, isNotNil, toMerged } from "es-toolkit";
+import { isNil, isNotNil, toMerged } from "es-toolkit";
 import type { PoolClient, PoolOptions } from "pg";
 import { Pool } from "pg";
-import { SystemException } from "@/exceptions/system-exception";
+import { getErrorMessage } from "@/errors";
 import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
@@ -10,13 +9,13 @@ let pool: Pool | null = null;
 
 export async function configure() {
   if (isNil(pool)) {
-    const config = getConfig();
+    const { pgvector } = getConfig();
 
     pool = new Pool({
-      connectionString: config.pgvectorUrl,
-      max: config.pgvectorPoolMaxConnections,
-      idleTimeoutMillis: config.pgvectorPoolIdleTimeoutMillis,
-      maxLifetimeSeconds: config.pgvectorPoolMaxLifetimeSeconds,
+      connectionString: pgvector.url,
+      max: pgvector.poolMaxConnections,
+      idleTimeoutMillis: pgvector.poolIdleTimeoutMillis,
+      maxLifetimeSeconds: pgvector.poolMaxLifetimeSeconds,
     });
 
     let client: PoolClient | null = null;
@@ -25,12 +24,8 @@ export async function configure() {
       await client.query("SELECT 1");
       getLogger(infra.pgvector).info("PgVector is ready");
     } catch (error) {
-      const message = isError(error) ? error.message : "Unknown error";
-      getLogger(infra.pgvector).error(`Failed to connect to PgVector: ${message}`);
-      throw new SystemException({
-        errcode: ErrorCode.INTERNAL_ERROR,
-        message: `Failed to connect to PgVector: ${message}`,
-      });
+      const message = getErrorMessage(error);
+      throw new Error(`PgVector is not ready: ${message}`);
     } finally {
       client?.release();
     }
@@ -39,10 +34,7 @@ export async function configure() {
 
 export function getPgVectorPool() {
   if (isNil(pool)) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Failed to get an PgVector connection",
-    });
+    throw new Error("PgVector is not ready");
   }
 
   return pool;
@@ -50,10 +42,7 @@ export function getPgVectorPool() {
 
 export function newPgVectorPool(options?: PoolOptions) {
   if (isNil(pool)) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Failed to create a new PgVector connection pool",
-    });
+    throw new Error("Create a new PgVector connection pool failed");
   }
 
   const poolOptions = toMerged(pool.options, options ?? {});

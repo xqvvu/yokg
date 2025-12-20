@@ -1,12 +1,4 @@
-import type { S3Client } from "@aws-sdk/client-s3";
-import { AWSS3StorageAdapter } from "@/infra/storage/adapters/aws-s3.adapter";
-import type { IObjectStorage } from "@/infra/storage/interface";
+import { AwsS3ExtendedAdapter } from "@/infra/storage/adapters/aws-s3.extended.adapter";
+import type { IStorage } from "@/infra/storage/interface";
 
-export class RustFsStorageAdapter extends AWSS3StorageAdapter implements IObjectStorage {
-  constructor(
-    protected readonly client: S3Client,
-    protected readonly bucket: string,
-  ) {
-    super(client, bucket);
-  }
-}
+export class RustFsAdapter extends AwsS3ExtendedAdapter implements IStorage {}

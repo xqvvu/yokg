@@ -1,7 +1,7 @@
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { addMonths, addYears, differenceInSeconds } from "date-fns";
 import { isSafeInteger } from "es-toolkit/compat";
-import { SystemException } from "@/exceptions/system-exception";
+import { SystemError } from "@/errors/system-error";
 
 type Unit = "second" | "minute" | "hour" | "day" | "month" | "season" | "year";
 
@@ -36,7 +36,7 @@ export class RedisTTLCalculator {
     }
 
     if (result <= 0 || !isSafeInteger(result)) {
-      throw new SystemException({
+      throw new SystemError({
         errcode: ErrorCode.INTERNAL_ERROR,
         message: "Redis ttl is invalid (too large or non-positive)",
       });

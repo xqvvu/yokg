@@ -1,7 +1,7 @@
 import type { ErrorCodeValue } from "@graph-mind/shared/lib/error-codes";
 import { HTTPException } from "hono/http-exception";
 
-export class SystemException extends HTTPException {
+export class SystemError extends HTTPException {
   public readonly errcode: ErrorCodeValue;
 
   constructor(
@@ -13,6 +13,6 @@ export class SystemException extends HTTPException {
     const { errcode, message, ...httpExceptionOptions } = options;
     super(500, { message, ...httpExceptionOptions });
     this.errcode = errcode;
-    this.name = "SystemException";
+    this.name = "SystemError";
   }
 }

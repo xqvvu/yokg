@@ -1,19 +1,9 @@
-import type {
-  EnsureBucketResult,
-  GeneratePresignedPutUrlParams,
-  GeneratePresignedPutUrlResult,
-  UploadObjectParams,
-} from "@/infra/storage/types";
+export interface IStorage {
+  ensureBucket(): Promise<void>;
 
-// TODO: complete object storage repository interface
-export interface IObjectStorage {
-  ensureBucket(): Promise<EnsureBucketResult>;
+  uploadObject(): Promise<void>;
 
-  uploadObject(params: UploadObjectParams): Promise<void>;
-
-  generatePresignedPutUrl(
-    params: GeneratePresignedPutUrlParams,
-  ): Promise<GeneratePresignedPutUrlResult>;
+  generatePresignedPutUrl(): Promise<void>;
 
   downloadObject(): Promise<void>;
 

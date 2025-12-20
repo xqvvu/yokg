@@ -2,7 +2,7 @@ import { SignInEmailSchema, SignUpEmailSchema } from "@graph-mind/shared/validat
 import { Hono } from "hono";
 import { cloneRawRequest } from "hono/request";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { BusinessException } from "@/exceptions/business-exception";
+import { BusinessError } from "@/errors/business-error";
 import { getLogger, mod } from "@/infra/logger";
 import { getBetterAuth } from "@/lib/auth";
 import { mapBetterAuthError } from "@/lib/better-auth-error-mapper";
@@ -29,7 +29,7 @@ auth.post(
 
     const data = await response.json();
     authLogger.warn(`Sign-in failed for email ${body.email}: ${data.message}`);
-    throw new BusinessException(response.status as ContentfulStatusCode, {
+    throw new BusinessError(response.status as ContentfulStatusCode, {
       errcode: mapBetterAuthError(data.code),
       message: data.message,
     });
@@ -54,7 +54,7 @@ auth.post(
 
     const data = await response.json();
     authLogger.warn(`Sign-up failed for email ${body.email}: ${data.message}`);
-    throw new BusinessException(response.status as ContentfulStatusCode, {
+    throw new BusinessError(response.status as ContentfulStatusCode, {
       errcode: mapBetterAuthError(data.code),
       message: data.message,
     });
@@ -76,7 +76,7 @@ auth.post("/sign-out", async function signOutHandler(c) {
 
   const data = await response.json();
   authLogger.warn(`Sign-out failed for user ${user.id}: ${data.message}`);
-  throw new BusinessException(response.status as ContentfulStatusCode, {
+  throw new BusinessError(response.status as ContentfulStatusCode, {
     errcode: mapBetterAuthError(data.code),
     message: data.message,
   });

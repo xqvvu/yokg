@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "@/app";
 import { configure as age, destroyAgePool } from "@/infra/age";
+import { configure as bullmq } from "@/infra/bullmq";
 import { configure as database, destroyDb } from "@/infra/database";
 import { destroyLogger, getLogger, configure as logger, root } from "@/infra/logger";
 import { destroyPgVectorPool, configure as pgvector } from "@/infra/pgvector";
@@ -10,9 +11,8 @@ import { configure as betterAuth } from "@/lib/auth";
 import { getConfig } from "@/lib/config";
 
 export async function prepare() {
-  getConfig();
   await logger();
-  await Promise.all([database(), age(), pgvector(), redis(), storage(), betterAuth()]);
+  await Promise.all([database(), age(), pgvector(), redis(), storage(), betterAuth(), bullmq()]);
 }
 
 export async function destroy() {
@@ -46,7 +46,7 @@ async function bootstrap() {
   serve(
     {
       fetch: app.fetch,
-      port: config.port,
+      port: config.server.port,
     },
     (info) => {
       const logger = getLogger(root);

@@ -1,5 +1,6 @@
 import { performance } from "node:perf_hooks";
 import { createMiddleware } from "hono/factory";
+import type { Logger } from "@/infra/logger";
 import { getLogger, http } from "@/infra/logger";
 
 export const logger = createMiddleware<Env>(async function loggerMiddleware(c, next) {
@@ -13,6 +14,11 @@ export const logger = createMiddleware<Env>(async function loggerMiddleware(c, n
 
   await next();
 
-  const duration = Number((performance.now() - start).toFixed(3));
-  getLogger(http.response).info(`[${method}] ${path} - ${duration}ms ${c.res.status}`);
+  const duration = parseFloat((performance.now() - start).toFixed(3));
+  let level: keyof Logger = "info";
+  const status = c.res.status;
+  if (status < 200 || status >= 400) {
+    level = "warn";
+  }
+  getLogger(http.response)[level](`[${method}] ${path} - ${duration}ms ${c.res.status}`);
 });

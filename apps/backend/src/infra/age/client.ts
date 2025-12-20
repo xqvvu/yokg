@@ -1,8 +1,7 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { isError, isNil, isNotNil, toMerged } from "es-toolkit";
+import { isNil, isNotNil, toMerged } from "es-toolkit";
 import type { PoolClient, PoolOptions } from "pg";
 import { Pool } from "pg";
-import { SystemException } from "@/exceptions/system-exception";
+import { getErrorMessage } from "@/errors";
 import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
@@ -10,13 +9,13 @@ let pool: Pool | null = null;
 
 export async function configure() {
   if (isNil(pool)) {
-    const config = getConfig();
+    const { age } = getConfig();
 
     pool = new Pool({
-      connectionString: config.ageUrl,
-      max: config.agePoolMaxConnections,
-      idleTimeoutMillis: config.agePoolIdleTimeoutMillis,
-      maxLifetimeSeconds: config.agePoolMaxLifetimeSeconds,
+      connectionString: age.url,
+      max: age.poolMaxConnections,
+      idleTimeoutMillis: age.poolIdleTimeoutMillis,
+      maxLifetimeSeconds: age.poolMaxLifetimeSeconds,
     });
   }
 
@@ -34,12 +33,8 @@ SET search_path = ag_catalog, "$user", public;`;
     await client.query("SELECT 1");
     getLogger(infra.age).info("AGE is ready");
   } catch (error) {
-    const message = isError(error) ? error.message : "Unknown error";
-    getLogger(infra.age).error(`Failed to connect to AGE: ${message}`);
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: `Failed to connect to AGE: ${message}`,
-    });
+    const message = getErrorMessage(error);
+    throw new Error(`AGE is not ready: ${message}`);
   } finally {
     client?.release();
   }
@@ -47,10 +42,7 @@ SET search_path = ag_catalog, "$user", public;`;
 
 export function getAgePool() {
   if (isNil(pool)) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Failed to get an AGE connection",
-    });
+    throw new Error("AGE is not ready");
   }
 
   return pool;
@@ -58,10 +50,7 @@ export function getAgePool() {
 
 export function newAgePool(options?: PoolOptions) {
   if (isNil(pool)) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Failed to create a new AGE connection pool",
-    });
+    throw new Error("Create a new AGE connection pool failed");
   }
 
   const poolOptions = toMerged(pool.options, options ?? {});

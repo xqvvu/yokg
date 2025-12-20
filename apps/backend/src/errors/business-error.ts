@@ -2,7 +2,7 @@ import type { ErrorCodeValue } from "@graph-mind/shared/lib/error-codes";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 
-export class BusinessException extends HTTPException {
+export class BusinessError extends HTTPException {
   public readonly errcode: ErrorCodeValue;
 
   constructor(
@@ -15,6 +15,6 @@ export class BusinessException extends HTTPException {
     const { errcode, message, ...httpExceptionOptions } = options;
     super(status, { message, ...httpExceptionOptions });
     this.errcode = errcode;
-    this.name = "BusinessException";
+    this.name = "BusinessError";
   }
 }

@@ -1,159 +1,125 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Method } from "@graph-mind/shared/types/http";
-import type { BasicConfigInit, InterpolatedConfigInit } from "@graph-mind/shared/validate/config";
-import { BasicConfigSchema, InterpolatedConfigSchema } from "@graph-mind/shared/validate/config";
-import { isNil, pick } from "es-toolkit";
-import { ZodError } from "zod";
-import { SystemException } from "@/exceptions/system-exception";
-
-export type ConfigInit = BasicConfigInit & InterpolatedConfigInit;
-
-function interpolate(basicConfig: BasicConfigInit): InterpolatedConfigInit {
-  const config = {
-    ...pick(process.env as Partial<InterpolatedConfigInit>, [
-      "DATABASE_URL",
-      "REDIS_URL",
-      "BETTER_AUTH_URL",
-      "OBJECT_STORAGE_ENDPOINT",
-      "AGE_URL",
-      "PGVECTOR_URL",
-    ]),
-  };
-
-  const extractPlaceholders = (val: string) => {
-    const placeholders: Record<string, string> = {};
-    const regex = /\$\{([^}]+)\}/g;
-    const matches = Array.from(val.matchAll(regex));
-    for (const match of matches) {
-      placeholders[match[0]] = match[1];
-    }
-    return placeholders;
-  };
-
-  for (const key of Object.keys(config)) {
-    let value = config[key as keyof typeof config];
-    if (isNil(value)) continue;
-    const placeholders = extractPlaceholders(value);
-    for (const [placeholder, key] of Object.entries(placeholders)) {
-      const basicKey = key as keyof BasicConfigInit;
-      const basicValue = String(basicConfig[basicKey]);
-      if (isNil(basicValue)) continue;
-      value = value.replace(placeholder, basicValue);
-    }
-    config[key as keyof typeof config] = value;
-  }
-
-  return config as InterpolatedConfigInit;
-}
+import { ConfigInitSchema } from "@graph-mind/shared/validate/config";
+import { createEnv } from "@t3-oss/env-core";
+import { isNil } from "es-toolkit";
 
 function prepare() {
-  try {
-    const basicConfig = BasicConfigSchema.parse(process.env);
-    let interpolatedConfig = interpolate(basicConfig);
-    interpolatedConfig = InterpolatedConfigSchema.parse(interpolatedConfig);
-    return {
-      ...basicConfig,
-      ...interpolatedConfig,
-    };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      const paths = error.issues.flatMap((issue) => issue.path).join(", ");
-      throw new SystemException({
-        errcode: ErrorCode.INTERNAL_ERROR,
-        message: `Invalid configuration detected. Please check these environment variables: ${paths}`,
-      });
-    }
-    throw error;
-  }
+  return createEnv({
+    server: {
+      ...ConfigInitSchema.shape,
+    },
+    runtimeEnv: process.env,
+    emptyStringAsUndefined: true,
+    isServer: true,
+    onValidationError(issues) {
+      const paths = issues.map((issue) => issue.path).join(", ");
+      console.error("Invalid environment variables. Please check: %s\n", paths);
+      process.exit(-1);
+    },
+  });
 }
 
 export class Config {
   private static instance: Config | null = null;
 
-  // Server
-  readonly port: number;
-  readonly locale: string;
-  readonly timezone: string;
-  readonly corsAllowedOrigins: string[];
-  readonly corsAllowedMethods = [
-    "GET",
-    "POST",
-    "PUT",
-    "DELETE",
-    "PATCH",
-    "OPTIONS",
-  ] satisfies Method[];
-  corsAllowedHeaders = ["Accept", "Origin", "X-CSRF-Token", "Content-Type", "Authorization"];
   readonly isDevelopmentNodeEnv: boolean;
   readonly isTestNodeEnv: boolean;
   readonly isProductionNodeEnv: boolean;
 
-  // BetterAuth
-  readonly betterAuthUrl: string;
+  readonly server: Readonly<{
+    port: number;
+    locale: string;
+    timezone: string;
+    corsAllowedOrigins: string[];
+    corsAllowedMethods: Method[];
+    corsAllowedHeaders: string[];
+    betterAuthUrl: string;
+  }>;
 
-  // PostgreSQL
-  readonly databaseUrl: string;
+  readonly databse: Readonly<{
+    url: string;
+  }>;
 
-  // Apache AGE
-  readonly ageUrl: string;
-  readonly agePoolMaxConnections: number;
-  readonly agePoolIdleTimeoutMillis: number;
-  readonly agePoolMaxLifetimeSeconds: number;
+  readonly age: Readonly<{
+    url: string;
+    poolMaxConnections: number;
+    poolIdleTimeoutMillis: number;
+    poolMaxLifetimeSeconds: number;
+  }>;
 
-  // PgVector
-  readonly pgvectorUrl: string;
-  readonly pgvectorPoolMaxConnections: number;
-  readonly pgvectorPoolIdleTimeoutMillis: number;
-  readonly pgvectorPoolMaxLifetimeSeconds: number;
+  readonly pgvector: Readonly<{
+    url: string;
+    poolMaxConnections: number;
+    poolIdleTimeoutMillis: number;
+    poolMaxLifetimeSeconds: number;
+  }>;
 
-  // Redis
-  readonly redisUrl: string;
+  readonly redis: Readonly<{
+    url: string;
+  }>;
 
-  // Object Storage
-  readonly objectStorageVendor: "aws-s3" | "rustfs" | "minio" | "r2" | "oss" | "cos" | "memory";
-  readonly objectStorageEndpoint: string;
-  readonly objectStorageAccessKey: string;
-  readonly objectStorageSecretKey: string;
-  readonly objectStorageRegion: string;
-  readonly objectStorageForcePathStyle: boolean;
-  readonly objectStoragePublicBucketName: string;
-  readonly objectStoragePrivateBucketName: string;
+  readonly storage: Readonly<{
+    vendor: ReturnType<typeof prepare>["STORAGE_VENDOR"];
+    acceeKeyId: string;
+    secretAccessKey: string;
+    region: string;
+    forcePathStyle: boolean;
+    publicBucketName: string;
+    privateBucketName: string;
+    internalEndpoint: string;
+    externalEndpoint: string;
+  }>;
 
   private constructor() {
     const env = prepare();
 
-    this.port = env.PORT;
-    this.locale = env.LOCALE;
-    this.timezone = env.TZ;
-    this.corsAllowedOrigins = env.CORS_ALLOWED_ORIGINS;
-    this.isDevelopmentNodeEnv = env.NODE_ENV === "development";
     this.isTestNodeEnv = env.NODE_ENV === "test";
+    this.isDevelopmentNodeEnv = env.NODE_ENV === "development";
     this.isProductionNodeEnv = !this.isDevelopmentNodeEnv && !this.isTestNodeEnv;
 
-    this.betterAuthUrl = env.BETTER_AUTH_URL;
+    this.server = {
+      port: env.PORT,
+      timezone: env.TZ,
+      locale: env.LOCALE,
+      corsAllowedOrigins: env.CORS_ALLOWED_ORIGINS,
+      corsAllowedMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+      corsAllowedHeaders: ["Accept", "Origin", "X-CSRF-Token", "Content-Type", "Authorization"],
+      betterAuthUrl: env.BETTER_AUTH_URL,
+    };
 
-    this.databaseUrl = env.DATABASE_URL;
+    this.databse = {
+      url: `postgres://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`,
+    };
 
-    this.ageUrl = env.AGE_URL;
-    this.agePoolMaxConnections = env.AGE_POOL_MAX_CONNECTIONS;
-    this.agePoolIdleTimeoutMillis = env.AGE_POOL_IDLE_TIMEOUT_MS;
-    this.agePoolMaxLifetimeSeconds = env.AGE_POOL_MAX_LIFETIME_SECONDS;
+    this.age = {
+      url: `postgres://${env.AGE_USER}:${env.AGE_PASSWORD}@${env.AGE_HOST}:${env.AGE_PORT}/${env.AGE_DB}`,
+      poolIdleTimeoutMillis: env.AGE_POOL_IDLE_TIMEOUT_MS,
+      poolMaxConnections: env.AGE_POOL_MAX_CONNECTIONS,
+      poolMaxLifetimeSeconds: env.AGE_POOL_MAX_LIFETIME_SECONDS,
+    };
 
-    this.pgvectorUrl = env.PGVECTOR_URL;
-    this.pgvectorPoolMaxConnections = env.PGVECTOR_POOL_MAX_CONNECTIONS;
-    this.pgvectorPoolIdleTimeoutMillis = env.PGVECTOR_POOL_IDLE_TIMEOUT_MS;
-    this.pgvectorPoolMaxLifetimeSeconds = env.PGVECTOR_POOL_MAX_LIFETIME_SECONDS;
+    this.pgvector = {
+      url: `postgres://${env.PGVECTOR_USER}:${env.PGVECTOR_PASSWORD}@${env.PGVECTOR_HOST}:${env.PGVECTOR_PORT}/${env.PGVECTOR_DB}`,
+      poolIdleTimeoutMillis: env.PGVECTOR_POOL_IDLE_TIMEOUT_MS,
+      poolMaxConnections: env.PGVECTOR_POOL_MAX_CONNECTIONS,
+      poolMaxLifetimeSeconds: env.PGVECTOR_POOL_MAX_LIFETIME_SECONDS,
+    };
 
-    this.redisUrl = env.REDIS_URL;
+    this.redis = {
+      url: `redis://default:${env.REDIS_PASSWORD}@${env.REDIS_HOST}:${env.REDIS_PORT}/${env.REDIS_DB}`,
+    };
 
-    this.objectStorageVendor = env.OBJECT_STORAGE_VENDOR;
-    this.objectStorageEndpoint = env.OBJECT_STORAGE_ENDPOINT;
-    this.objectStorageAccessKey = env.OBJECT_STORAGE_ACCESS_KEY;
-    this.objectStorageSecretKey = env.OBJECT_STORAGE_SECRET_KEY;
-    this.objectStorageRegion = env.OBJECT_STORAGE_REGION;
-    this.objectStorageForcePathStyle = env.OBJECT_STORAGE_FORCE_PATH_STYLE;
-    this.objectStoragePublicBucketName = env.OBJECT_STORAGE_PUBLIC_BUCKET_NAME;
-    this.objectStoragePrivateBucketName = env.OBJECT_STORAGE_PRIVATE_BUCKET_NAME;
+    this.storage = {
+      vendor: env.STORAGE_VENDOR,
+      acceeKeyId: env.STORAGE_ACCESS_KEY,
+      secretAccessKey: env.STORAGE_SECRET_KEY,
+      region: env.STORAGE_REGION,
+      forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,
+      publicBucketName: env.STORAGE_PUBLIC_BUCKET_NAME,
+      privateBucketName: env.STORAGE_PRIVATE_BUCKET_NAME,
+      internalEndpoint: env.STORAGE_INTERNAL_ENDPOINT,
+      externalEndpoint: env.STORAGE_EXTERNAL_ENDPOINT,
+    };
   }
 
   static getInstance() {

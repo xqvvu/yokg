@@ -69,6 +69,8 @@ services:
       - ./.docker/redis/data:/data
     command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}']
     restart: unless-stopped
+    environment:
+      TZ: ${TZ}
     networks:
       - graph-mind
     healthcheck:
@@ -78,10 +80,10 @@ services:
       retries: 5
 
   rustfs:
-    image: rustfs/rustfs:1.0.0-alpha.73
+    image: rustfs/rustfs:1.0.0-alpha.76
     ports:
-      - ${OBJECT_STORAGE_VENDOR_API_PORT:-9000}:9000
-      - ${OBJECT_STORAGE_VENDOR_CONSOLE_PORT:-9001}:9001
+      - ${OBJECT_STORAGE_SELF_HOSTED_VENDOR_API_PORT-:9000}:9000
+      - ${OBJECT_STORAGE_SELF_HOSTED_VENDOR_CONSOLE_PORT-:9001}:9001
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       RUSTFS_ACCESS_KEY: ${OBJECT_STORAGE_ACCESS_KEY}

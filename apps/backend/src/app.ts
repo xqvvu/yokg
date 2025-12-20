@@ -1,14 +1,10 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { Hono } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
-import { HTTPException } from "hono/http-exception";
 import { requestId } from "hono/request-id";
-import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { BusinessException } from "@/exceptions/business-exception";
-import { SystemException } from "@/exceptions/system-exception";
 import type { Config } from "@/lib/config";
 import { getConfig } from "@/lib/config";
+import { createErrorHandler, createNotFoundHandler } from "@/lib/error-handler";
 import { R } from "@/lib/http";
 import { logger } from "@/middlewares/logger";
 import { auth } from "@/modules/auth/auth.route";
@@ -16,7 +12,7 @@ import { users } from "@/modules/users/users.route";
 
 type App = Readonly<Hono<Env>>;
 
-export async function createApp(config: Config = getConfig()): Promise<App> {
+export async function createApp({ server }: Config = getConfig()): Promise<App> {
   const app = new Hono<Env>();
 
   // #region ---------------------middlewares-----------------------//
@@ -24,9 +20,9 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
     "*",
     cors({
       credentials: true,
-      origin: config.corsAllowedOrigins,
-      allowHeaders: config.corsAllowedHeaders,
-      allowMethods: config.corsAllowedMethods,
+      origin: server.corsAllowedOrigins,
+      allowHeaders: server.corsAllowedHeaders,
+      allowMethods: server.corsAllowedMethods,
     }),
   );
   app.use("*", logger);
@@ -39,77 +35,16 @@ export async function createApp(config: Config = getConfig()): Promise<App> {
   // #region ---------------------routes----------------------------//
   app.get("/api/healthz", (c) => R.ok(c, "ok"));
   app.get("/api/ping", (c) => R.ok(c, "pong"));
+  app.get("/healthz", (c) => R.ok(c, "ok"));
+  app.get("/ping", (c) => R.ok(c, "pong"));
 
   app.route("/api", auth);
   app.route("/api", users);
   // #endregion ----------------------------------------------------//
 
   // #region ---------------------event handlers--------------------//
-  app.onError((err, c) => {
-    const logger = c.get("logger");
-
-    // Handle BusinessException - expected business errors (log at warn level)
-    if (err instanceof BusinessException) {
-      logger.warn`Business exception: ${err.message} [errcode=${err.errcode}]`;
-      const status = err.status;
-      c.status(status);
-      return R.fail(c, {
-        errcode: err.errcode,
-        errmsg: err.message || "Business exception",
-      });
-    }
-
-    // Handle SystemException - unexpected system errors (log at error level)
-    if (err instanceof SystemException) {
-      logger.fatal`System exception: ${err.message} [errcode=${err.errcode}]`;
-      const status = err.status;
-      c.status(status);
-      return R.fail(c, {
-        errcode: err.errcode,
-        errmsg: err.message || "System exception",
-      });
-    }
-
-    // Handle HTTPException (log at warn level)
-    if (err instanceof HTTPException) {
-      logger.error`HTTP exception: ${err.message} [status=${err.status}]`;
-      const response = err.getResponse();
-      const status = response.status as ContentfulStatusCode;
-      c.status(status);
-      return R.fail(c, {
-        errcode: ErrorCode.INTERNAL_ERROR,
-        errmsg: err.message || "Internal error",
-      });
-    }
-
-    // Handle generic Error - unexpected errors (log at error level with stack)
-    if (err instanceof Error) {
-      logger.error`Unhandled error: ${err.message}`;
-      c.status(500);
-      return R.fail(c, {
-        errcode: ErrorCode.INTERNAL_ERROR,
-        errmsg: err.message,
-      });
-    }
-
-    // Unknown error type - log as critical
-    logger.error`Unknown error type: ${String(err)}`;
-    c.status(500);
-    return R.fail(c, {
-      errcode: ErrorCode.INTERNAL_ERROR,
-      errmsg: "Unknown internal error",
-    });
-  });
-
-  app.notFound((c) => {
-    const logger = c.get("logger");
-    c.status(404);
-    logger.warn`Resource not found: ${c.req.path}`;
-    return R.fail(c, {
-      errcode: ErrorCode.NOT_FOUND,
-      errmsg: "Resource not found",
-    });
-  });
+  app.onError(createErrorHandler());
+  app.notFound(createNotFoundHandler());
   // #endregion ----------------------------------------------------//
 
   return app;

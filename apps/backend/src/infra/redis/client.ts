@@ -1,53 +1,41 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { isError, isNil, isNotNil } from "es-toolkit";
+import { isNil, isNotNil } from "es-toolkit";
 import { createClient } from "redis";
-import { SystemException } from "@/exceptions/system-exception";
-import { getRedisLogger } from "@/infra/redis/helpers";
+import { getErrorMessage } from "@/errors";
+import { getLogger, infra } from "@/infra/logger";
 import { getConfig } from "@/lib/config";
 
 export type Redis = ReturnType<typeof createClient>;
-
 let redis: Redis | null = null;
 
 export async function configure() {
-  if (isNil(redis)) {
-    const config = getConfig();
-    const redisLogger = getRedisLogger();
+  if (isNotNil(redis)) return;
 
-    redis = createClient({
-      RESP: 3,
-      url: config.redisUrl,
-      maintNotifications: "disabled",
-    });
+  const config = getConfig();
+  const logger = getLogger(infra.redis);
 
-    redis.on("ready", function redisConnectHandler() {
-      redisLogger.info("Redis is ready");
-    });
+  redis = createClient({
+    RESP: 3,
+    url: config.redis.url,
+    maintNotifications: "disabled",
+    socket: {
+      keepAlive: true,
+      connectTimeout: 5_000,
+      reconnectStrategy: (times) => Math.min(times * 100, 1_000),
+    },
+    commandOptions: {
+      timeout: 3_000,
+    },
+  });
 
-    redis.on("error", function redisErrorHandler(err: AggregateError | Error) {
-      if (err instanceof AggregateError) {
-        throw new SystemException({
-          errcode: ErrorCode.INTERNAL_ERROR,
-          message: err.errors.map((error) => error.message).join(", "),
-        });
-      } else {
-        throw new SystemException({
-          errcode: ErrorCode.INTERNAL_ERROR,
-          message: isError(err) ? err.message : "Unknown redis error",
-        });
-      }
-    });
+  redis.on("ready", () => void logger.info("Redis is ready"));
+  redis.on("error", (err) => void logger.error(getErrorMessage(err)));
 
-    await redis.connect();
-  }
+  await redis.connect();
 }
 
 export function getRedis() {
   if (isNil(redis)) {
-    throw new SystemException({
-      errcode: ErrorCode.INTERNAL_ERROR,
-      message: "Redis has not been initialized yet",
-    });
+    throw new Error("Redis is not ready");
   }
 
   return redis;
@@ -55,7 +43,7 @@ export function getRedis() {
 
 export async function destroyRedis() {
   if (isNotNil(redis)) {
-    redis.destroy();
+    await redis.quit();
     redis = null;
   }
 }
