@@ -4,7 +4,7 @@ import type { Logger } from "@/infra/logger";
 import { getLogger, http } from "@/infra/logger";
 
 export const logger = createMiddleware<Env>(async function loggerMiddleware(c, next) {
-  c.set("logger", getLogger(http.warn));
+  c.set("logger", getLogger(http.root));
 
   const method = c.req.method;
   const path = c.req.path;

@@ -5,8 +5,6 @@ import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { BusinessError } from "@/errors/business-error";
 import { SystemError } from "@/errors/system-error";
 import type { Logger } from "@/infra/logger";
-import { getLogger } from "@/infra/logger";
-import { error } from "@/infra/logger/categories";
 import { R } from "@/lib/http";
 
 type ErrorResult =
@@ -34,12 +32,15 @@ const pipe = (...handlers: ErrorHandlerFn[]): ErrorHandlerFn => {
   };
 };
 
-const handleBusinessError: ErrorHandlerFn = (err) => {
+const handleBusinessError: ErrorHandlerFn = (err, logger) => {
   if (!(err instanceof BusinessError)) {
     return { handled: false };
   }
 
-  getLogger(error.business).warn(`${err.message} - errcode=${err.errcode}`);
+  logger.warn(`${err.message}`, {
+    errorType: "business",
+    errorCode: err.errcode,
+  });
 
   return {
     handled: true,
@@ -49,12 +50,15 @@ const handleBusinessError: ErrorHandlerFn = (err) => {
   };
 };
 
-const handleSystemError: ErrorHandlerFn = (err) => {
+const handleSystemError: ErrorHandlerFn = (err, logger) => {
   if (!(err instanceof SystemError)) {
     return { handled: false };
   }
 
-  getLogger(error.system).fatal(`${err.message} - errcode=${err.errcode}`);
+  logger.fatal(`${err.message}`, {
+    errorType: "system",
+    errorCode: err.errcode,
+  });
 
   return {
     handled: true,
@@ -69,7 +73,9 @@ const handleHTTPException: ErrorHandlerFn = (err, logger) => {
     return { handled: false };
   }
 
-  logger.error(`${err.message} - status=${err.status}`);
+  logger.error(`${err.message}`, {
+    errorType: "http_exception",
+  });
 
   return {
     handled: true,
@@ -84,7 +90,9 @@ const handleError: ErrorHandlerFn = (err, logger) => {
     return { handled: false };
   }
 
-  logger.error(`Unhandled error: ${err.message}`);
+  logger.error(`Unhandled error: ${err.message}`, {
+    errorType: "unhandled",
+  });
 
   return {
     handled: true,

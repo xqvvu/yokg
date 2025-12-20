@@ -1,8 +1,8 @@
-import { createServerKy } from "@graph-mind/ky/server";
 import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import type { Result } from "@graph-mind/shared/types/http";
-import { isError, isNil, isNotNil } from "es-toolkit";
+import { isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
+import { getErrorMessage } from "@/errors";
 import { SystemError } from "@/errors/system-error";
 
 export const R = {
@@ -81,10 +81,9 @@ export async function cloneAndFormatJSONResponse(
       statusText: isNil(init?.statusText) ? response.statusText : init.statusText,
     });
   } catch (error) {
-    const message = isError(error) ? error.message : "unknown error";
     throw new SystemError({
       errcode: ErrorCode.INTERNAL_ERROR,
-      message: `Clone JSON response failed: ${message}`,
+      message: `Clone JSON response failed: ${getErrorMessage(error)}`,
     });
   }
 }
@@ -97,5 +96,3 @@ export function appendHeaders(headers: Headers, appendHeaders?: HeadersInit) {
   }
   return h;
 }
-
-export const ky = createServerKy();

@@ -1,36 +1,27 @@
-import { detectFileType } from "@graph-mind/shared/lib/file-type";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { ky } from "@/lib/http";
 
-export const Route = createFileRoute("/")({
-  component: App,
-});
+export const Route = createFileRoute("/")({ component: App });
 
-// TODO: complete this page
 function App() {
-  const [_, setFile] = useState<File | null>(null);
+  const handleClick = async () => {
+    const res = await ky.get<string>("healthz").json();
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setFile(file);
-    const fileType = await detectFileType({
-      from: "stream",
-      file: file.stream(),
+    toast(res, {
+      position: "top-center",
     });
-    console.info(fileType);
   };
 
   return (
-    <div className="flex justify-center py-5 gap-4 items-center">
-      <Input
-        className="cursor-pointer max-w-md"
-        onChange={handleFileChange}
-        type="file"
-      />
+    <div className="flex justify-center">
+      <Button
+        className="cursor-pointer min-w-12"
+        onClick={handleClick}
+      >
+        Hi
+      </Button>
     </div>
   );
 }

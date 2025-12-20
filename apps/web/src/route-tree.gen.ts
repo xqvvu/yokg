@@ -9,72 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
-import { Route as GraphLayoutRouteImport } from "./routes/graph/layout";
 import { Route as IndexRouteImport } from "./routes/index";
-import { Route as GraphIndexRouteImport } from "./routes/graph/index";
-import { Route as GraphIdRouteImport } from "./routes/graph/$id";
 
-const GraphLayoutRoute = GraphLayoutRouteImport.update({
-  id: "/graph",
-  path: "/graph",
-  getParentRoute: () => rootRouteImport,
-} as any);
 const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
-const GraphIndexRoute = GraphIndexRouteImport.update({
-  id: "/",
-  path: "/",
-  getParentRoute: () => GraphLayoutRoute,
-} as any);
-const GraphIdRoute = GraphIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
-  getParentRoute: () => GraphLayoutRoute,
-} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
-  "/graph": typeof GraphLayoutRouteWithChildren;
-  "/graph/$id": typeof GraphIdRoute;
-  "/graph/": typeof GraphIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
-  "/graph/$id": typeof GraphIdRoute;
-  "/graph": typeof GraphIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
-  "/graph": typeof GraphLayoutRouteWithChildren;
-  "/graph/$id": typeof GraphIdRoute;
-  "/graph/": typeof GraphIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/graph" | "/graph/$id" | "/graph/";
+  fullPaths: "/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/graph/$id" | "/graph";
-  id: "__root__" | "/" | "/graph" | "/graph/$id" | "/graph/";
+  to: "/";
+  id: "__root__" | "/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
-  GraphLayoutRoute: typeof GraphLayoutRouteWithChildren;
 }
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    "/graph": {
-      id: "/graph";
-      path: "/graph";
-      fullPath: "/graph";
-      preLoaderRoute: typeof GraphLayoutRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
     "/": {
       id: "/";
       path: "/";
@@ -82,40 +48,11 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    "/graph/": {
-      id: "/graph/";
-      path: "/";
-      fullPath: "/graph/";
-      preLoaderRoute: typeof GraphIndexRouteImport;
-      parentRoute: typeof GraphLayoutRoute;
-    };
-    "/graph/$id": {
-      id: "/graph/$id";
-      path: "/$id";
-      fullPath: "/graph/$id";
-      preLoaderRoute: typeof GraphIdRouteImport;
-      parentRoute: typeof GraphLayoutRoute;
-    };
   }
 }
 
-interface GraphLayoutRouteChildren {
-  GraphIdRoute: typeof GraphIdRoute;
-  GraphIndexRoute: typeof GraphIndexRoute;
-}
-
-const GraphLayoutRouteChildren: GraphLayoutRouteChildren = {
-  GraphIdRoute: GraphIdRoute,
-  GraphIndexRoute: GraphIndexRoute,
-};
-
-const GraphLayoutRouteWithChildren = GraphLayoutRoute._addFileChildren(
-  GraphLayoutRouteChildren,
-);
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GraphLayoutRoute: GraphLayoutRouteWithChildren,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

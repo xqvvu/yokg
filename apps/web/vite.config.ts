@@ -15,11 +15,7 @@ export default defineConfig({
       semicolons: true,
       quoteStyle: "double",
       routeToken: "layout",
-      generatedRouteTree: path.resolve(
-        import.meta.dirname,
-        "src",
-        "route-tree.gen.ts",
-      ),
+      generatedRouteTree: path.resolve(import.meta.dirname, "src", "route-tree.gen.ts"),
     }),
     viteReact(),
     tailwindcss(),

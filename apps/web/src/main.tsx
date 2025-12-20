@@ -1,10 +1,10 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider.tsx";
+import * as TanStackQueryProvider from "@/providers/tanstack-query";
 import { routeTree } from "@/route-tree.gen";
 
-import "@/styles.css";
+import "@/style.css";
 
 const TanStackQueryProviderContext = TanStackQueryProvider.getContext();
 const router = createRouter({

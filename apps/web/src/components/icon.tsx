@@ -7,10 +7,7 @@ type Props = {
    * @example icon="icon-[solar--chat-round-like-outline]"
    */
   icon: `icon-[${string}--${string}]`;
-} & React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLDivElement>,
-  HTMLDivElement
->;
+} & React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
 export function Icon({ icon, className, ...props }: Props) {
   return (
