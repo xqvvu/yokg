@@ -8,16 +8,11 @@
     "noEmit": true,
     "skipLibCheck": true,
     "types": ["node"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-
       "@graph-mind/shared/*": ["../../packages/shared/src/*"],
-      "@graph-mind/ky/*": ["../../packages/ky/src/*"],
-
       "#test/*": ["test/*"]
     }
   },

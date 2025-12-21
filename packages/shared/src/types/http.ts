@@ -18,11 +18,4 @@ export type BetterAuthResult<T = unknown> = {
   error: unknown;
 };
 
-export type Method =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD";
+export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";

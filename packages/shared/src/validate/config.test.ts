@@ -49,8 +49,7 @@ describe("ConfigSchema", () => {
     RUSTFS_SECRET_KEY: "mypassword",
 
     // better-auth
-    BETTER_AUTH_SECRET:
-      "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
+    BETTER_AUTH_SECRET: "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
     BETTER_AUTH_URL: "http://localhost:10001",
   };
 
@@ -90,33 +89,21 @@ describe("ConfigSchema", () => {
 
   describe("CORS_ALLOWED_ORIGINS transformation", () => {
     it("should transform comma-separated origins to array", () => {
-      processEnv.CORS_ALLOWED_ORIGINS =
-        "http://localhost:3000,https://example.com";
+      processEnv.CORS_ALLOWED_ORIGINS = "http://localhost:3000,https://example.com";
       const result = ConfigSchema.parse(processEnv);
-      expect(result.CORS_ALLOWED_ORIGINS).toEqual([
-        "http://localhost:3000",
-        "https://example.com",
-      ]);
+      expect(result.CORS_ALLOWED_ORIGINS).toEqual(["http://localhost:3000", "https://example.com"]);
     });
 
     it("should handle origins with spaces", () => {
-      processEnv.CORS_ALLOWED_ORIGINS =
-        " http://localhost:3000 , https://example.com ";
+      processEnv.CORS_ALLOWED_ORIGINS = " http://localhost:3000 , https://example.com ";
       const result = ConfigSchema.parse(processEnv);
-      expect(result.CORS_ALLOWED_ORIGINS).toEqual([
-        "http://localhost:3000",
-        "https://example.com",
-      ]);
+      expect(result.CORS_ALLOWED_ORIGINS).toEqual(["http://localhost:3000", "https://example.com"]);
     });
 
     it("should handle empty entries in comma-separated list", () => {
-      processEnv.CORS_ALLOWED_ORIGINS =
-        "http://localhost:3000,,https://example.com,";
+      processEnv.CORS_ALLOWED_ORIGINS = "http://localhost:3000,,https://example.com,";
       const result = ConfigSchema.parse(processEnv);
-      expect(result.CORS_ALLOWED_ORIGINS).toEqual([
-        "http://localhost:3000",
-        "https://example.com",
-      ]);
+      expect(result.CORS_ALLOWED_ORIGINS).toEqual(["http://localhost:3000", "https://example.com"]);
     });
 
     it("should allow wildcard origin", () => {
@@ -128,10 +115,7 @@ describe("ConfigSchema", () => {
     it("should allow mixed wildcard and URLs", () => {
       processEnv.CORS_ALLOWED_ORIGINS = "*,http://localhost:3000";
       const result = ConfigSchema.parse(processEnv);
-      expect(result.CORS_ALLOWED_ORIGINS).toEqual([
-        "*",
-        "http://localhost:3000",
-      ]);
+      expect(result.CORS_ALLOWED_ORIGINS).toEqual(["*", "http://localhost:3000"]);
     });
 
     it("should throw error for invalid URL format", () => {
@@ -159,15 +143,13 @@ describe("ConfigSchema", () => {
 
   describe("DATABASE_URL validation", () => {
     it("should accept valid postgresql URL", () => {
-      processEnv.DATABASE_URL =
-        "postgresql://user:password@localhost:5432/dbname";
+      processEnv.DATABASE_URL = "postgresql://user:password@localhost:5432/dbname";
       const result = ConfigSchema.parse(processEnv);
       expect(result.DATABASE_URL).toBe(processEnv.DATABASE_URL);
     });
 
     it("should accept valid postgres URL", () => {
-      processEnv.DATABASE_URL =
-        "postgres://user:password@localhost:5432/dbname";
+      processEnv.DATABASE_URL = "postgres://user:password@localhost:5432/dbname";
       const result = ConfigSchema.parse(processEnv);
       expect(result.DATABASE_URL).toBe(processEnv.DATABASE_URL);
     });
@@ -443,13 +425,7 @@ describe("ConfigSchema", () => {
 
   describe("NODE_ENV validation", () => {
     it("should accept any NODE_ENV value", () => {
-      const validNodeEnvValues = [
-        "development",
-        "production",
-        "test",
-        "staging",
-        "custom",
-      ];
+      const validNodeEnvValues = ["development", "production", "test", "staging", "custom"];
       for (const nodeEnvValue of validNodeEnvValues) {
         processEnv.NODE_ENV = nodeEnvValue;
         const result = ConfigSchema.parse(processEnv);
@@ -733,10 +709,7 @@ describe("ConfigSchema", () => {
         // server
         NODE_ENV: "development",
         PORT: 10001,
-        CORS_ALLOWED_ORIGINS: [
-          "http://localhost:3000",
-          "http://localhost:3001",
-        ],
+        CORS_ALLOWED_ORIGINS: ["http://localhost:3000", "http://localhost:3001"],
         LOCALE: "en-US",
         TZ: "America/Los_Angeles",
 
@@ -746,8 +719,7 @@ describe("ConfigSchema", () => {
         POSTGRES_DB: "graph-mind",
         POSTGRES_USER: "postgres",
         POSTGRES_PASSWORD: "mypassword",
-        DATABASE_URL:
-          "postgres://postgres:mypassword@localhost:5432/graph-mind",
+        DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/graph-mind",
 
         // redis
         REDIS_PORT: 6379,
@@ -778,8 +750,7 @@ describe("ConfigSchema", () => {
         RUSTFS_SECRET_KEY: "mypassword",
 
         // better-auth
-        BETTER_AUTH_SECRET:
-          "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
+        BETTER_AUTH_SECRET: "a7081891386aea621b1c766c07f2186b573fbe5f8497c5243801565683d039d9",
         BETTER_AUTH_URL: "http://localhost:10001",
       });
     });
