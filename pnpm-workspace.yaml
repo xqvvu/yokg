@@ -7,7 +7,7 @@ catalog:
   '@types/node': ^24.10.4
   lefthook: ^2.0.12
   tsx: ^4.21.0
-  turbo: ^2.7.1
+  turbo: ^2.7.2
   typescript: ^5.9.3
   vite-tsconfig-paths: ^6.0.3
   vitest: ^4.0.16

@@ -1,16 +1,8 @@
-import fs from "node:fs/promises";
+import fs from "node:fs";
 import path from "node:path";
-import { performance } from "node:perf_hooks";
+import perf_hooks from "node:perf_hooks";
 
-const skips = new Set([
-  "openspec",
-  ".git",
-  ".idea",
-  ".vscode",
-  ".cursor",
-  ".claude",
-  ".DS_Store",
-]);
+const skips = new Set(["openspec", ".git", ".idea", ".vscode", ".cursor", ".claude", ".DS_Store"]);
 
 function isNodeModules(name: string): name is "node_modules" {
   return name === "node_modules";
@@ -18,13 +10,13 @@ function isNodeModules(name: string): name is "node_modules" {
 
 async function remove(nodeModules: string) {
   console.info(`🧹 Start delete ${nodeModules}`);
-  await fs.rm(nodeModules, { recursive: true, force: true });
+  await fs.promises.rm(nodeModules, { recursive: true, force: true });
   console.info(`⭕ Deleted ${nodeModules}`);
 }
 
 async function scan(dir: string, paths: string[]) {
   try {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const entries = await fs.promises.readdir(dir, { withFileTypes: true });
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
@@ -48,11 +40,11 @@ async function main() {
   const paths: string[] = [];
 
   console.info(`🧹 Start cleanup from: ${root}`);
-  const start = performance.now();
+  const start = perf_hooks.performance.now();
   await scan(root, paths);
   await Promise.all(paths.map((nodeModules) => remove(nodeModules)));
-  const elapsed = performance.now() - start;
-  console.info("✅ Cleanup completed, it took %dms", elapsed.toFixed(2));
+  const elapsed = perf_hooks.performance.now() - start;
+  console.info("✅ Cleanup completed, it took %dms", elapsed.toFixed(1));
 }
 
-main();
+void (await main());
