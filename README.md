@@ -1,9 +1,15 @@
-# YOKG: You Only Query Knowledge Graph for RAG
+<div align="center">
+  <img src="assets/brand/mascot.png" alt="YOKG Mascot" width="400"/>
+
+  <h1>You Only Query Knowledge Graph for RAG</h1>
+</div>
 
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 
 > [!NOTE]
 > This project is in early development. Many features are still in progress.
+
+<br/>
 
 YOKG (You Only Query Knowledge Graph for RAG) is a RAG enhanced Knowledge Graph system that integrates structured data (Knowledge Graph) with unstructured data (LLM/RAG) to provide intelligent information retrieval and reasoning capabilities.
 
