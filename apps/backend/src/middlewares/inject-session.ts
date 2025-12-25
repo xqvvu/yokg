@@ -1,5 +1,5 @@
-import type { ISession } from "@graph-mind/shared/validate/session";
-import type { IUser } from "@graph-mind/shared/validate/users";
+import type { ISession } from "@yokg/shared/validate/session";
+import type { IUser } from "@yokg/shared/validate/users";
 import { isNil } from "es-toolkit";
 import { createMiddleware } from "hono/factory";
 import { getBetterAuth } from "@/lib/auth";

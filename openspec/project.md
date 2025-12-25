@@ -41,9 +41,9 @@ A RAG (Retrieval-Augmented Generation) enhanced Knowledge Graph system that comb
 - **Testing:** Vitest, React Testing Library
 
 ### Shared Packages (`packages/`)
-- `@graph-mind/shared`: Zod schemas, Drizzle tables, types, utilities
-- `@graph-mind/ky`: HTTP client factory (Ky wrappers for web/server)
-- `@graph-mind/ai-providers`: Custom AI provider implementations
+- `@yokg/shared`: Zod schemas, Drizzle tables, types, utilities
+- `@yokg/ky`: HTTP client factory (Ky wrappers for web/server)
+- `@yokg/ai-providers`: Custom AI provider implementations
 
 ## Project Conventions
 
@@ -122,7 +122,7 @@ R.fail(c, { errcode, errmsg })  // Error response
 
 #### Usage
 ```typescript
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
 
 throw new BusinessException(404, {
   errcode: ErrorCode.USER.NOT_FOUND,  // 20101
@@ -151,7 +151,7 @@ apps/web/src/
 
 ### Shared Package Conventions
 
-#### Zod Schema Definitions (`@graph-mind/shared/validate/`)
+#### Zod Schema Definitions (`@yokg/shared/validate/`)
 ```typescript
 // From Drizzle table
 export const SelectUserSchema = createSelectSchema(users);
@@ -261,7 +261,7 @@ const { embedding } = await embed({ model, value });
 
 ### AI/LLM Providers
 - **Vercel AI SDK:** Unified interface for multiple providers
-- **Supported Providers:** OpenAI, Anthropic, custom providers via `@graph-mind/ai-providers`
+- **Supported Providers:** OpenAI, Anthropic, custom providers via `@yokg/ai-providers`
 
 ## Future Modules (Planned)
 

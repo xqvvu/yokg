@@ -23,6 +23,7 @@ import type {
   UploadObjectParams,
   UploadObjectResult,
 } from "@/infra/storage/types";
+import type { getConfig } from "@/lib/config";
 
 /**
  * 对象存储接口
@@ -99,4 +100,13 @@ export interface IStorage {
    * 销毁存储实例，清理资源
    */
   destroy(): void;
+}
+
+export interface IStorageOptions {
+  vendor: ReturnType<typeof getConfig>["storage"]["vendor"];
+  endpoint: string;
+  region: string;
+  forcePathStyle?: boolean;
+  accessKeyId?: string;
+  secretAccessKey?: string;
 }

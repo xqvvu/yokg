@@ -1,4 +1,4 @@
-import { schema } from "@graph-mind/shared/schemas";
+import { schema } from "@yokg/shared/schemas";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { isNil, isNotNil } from "es-toolkit";
 import type { PoolClient } from "pg";

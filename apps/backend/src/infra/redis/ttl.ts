@@ -1,4 +1,4 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
 import { addMonths, addYears, differenceInSeconds } from "date-fns";
 import { isSafeInteger } from "es-toolkit/compat";
 import { SystemError } from "@/errors/system-error";

@@ -1,4 +1,4 @@
-import type { Result } from "@graph-mind/shared/types/http";
+import type { Result } from "@yokg/shared/types/http";
 import _ky from "ky";
 import { env } from "@/env";
 

@@ -80,9 +80,6 @@ importers:
       '@fastify/busboy':
         specifier: ^3.2.0
         version: 3.2.0
-      '@graph-mind/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@hono/node-server':
         specifier: ^1.19.7
         version: 1.19.7(hono@4.11.1)
@@ -101,6 +98,9 @@ importers:
       '@t3-oss/env-core':
         specifier: ^0.13.10
         version: 0.13.10(typescript@5.9.3)(zod@4.2.1)
+      '@yokg/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       ai:
         specifier: 6.0.0-beta.159
         version: 6.0.0-beta.159(zod@4.2.1)
@@ -195,9 +195,6 @@ importers:
       '@fontsource-variable/outfit':
         specifier: ^5.2.8
         version: 5.2.8
-      '@graph-mind/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.69.0(react@19.2.3))
@@ -234,6 +231,9 @@ importers:
       '@tanstack/router-plugin':
         specifier: ^1.142.0
         version: 1.142.0(@tanstack/react-router@1.141.8(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0))
+      '@yokg/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

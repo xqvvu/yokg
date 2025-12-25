@@ -1,5 +1,5 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
 import { sValidator } from "@hono/standard-validator";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
 import { isNotNil } from "es-toolkit";
 import type { ZodType } from "zod";
 import { BusinessError } from "@/errors/business-error";

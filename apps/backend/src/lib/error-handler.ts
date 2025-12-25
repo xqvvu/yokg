@@ -1,4 +1,4 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";

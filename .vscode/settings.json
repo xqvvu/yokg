@@ -18,13 +18,7 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "css.lint.unknownAtRules": "ignore",
 
   "loccy.sourceLocale": "zh-CN",
-  "loccy.annotations.previewLocale": "zh-CN",
-
-  "todo-tree.filtering.excludeGlobs": ["openspec"],
-  "todo-tree.highlights.enabled": false,
-
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "loccy.annotations.previewLocale": "zh-CN"
 }

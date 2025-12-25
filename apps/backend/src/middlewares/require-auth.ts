@@ -1,4 +1,4 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
 import { isBefore } from "date-fns";
 import { createMiddleware } from "hono/factory";
 import { BusinessError } from "@/errors/business-error";

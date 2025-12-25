@@ -1,5 +1,5 @@
 {
-  "name": "@graph-mind/backend",
+  "name": "@yokg/backend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
     "@aws-sdk/lib-storage": "^3.956.0",
     "@aws-sdk/s3-request-presigner": "^3.956.0",
     "@fastify/busboy": "^3.2.0",
-    "@graph-mind/shared": "workspace:*",
+    "@yokg/shared": "workspace:*",
     "@hono/node-server": "^1.19.7",
     "@hono/standard-validator": "^0.2.1",
     "@logtape/file": "^1.3.5",

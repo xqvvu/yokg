@@ -1,6 +1,6 @@
-import type { Method } from "@graph-mind/shared/types/http";
-import { ConfigInitSchema } from "@graph-mind/shared/validate/config";
 import { createEnv } from "@t3-oss/env-core";
+import type { Method } from "@yokg/shared/types/http";
+import { ConfigInitSchema } from "@yokg/shared/validate/config";
 import { isNil } from "es-toolkit";
 
 function prepare() {

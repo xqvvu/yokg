@@ -1,5 +1,5 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import type { Result } from "@graph-mind/shared/types/http";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
+import type { Result } from "@yokg/shared/types/http";
 import { isNil, isNotNil } from "es-toolkit";
 import type { Context } from "hono";
 import { getErrorMessage } from "@/errors";

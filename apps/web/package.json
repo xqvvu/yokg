@@ -1,5 +1,5 @@
 {
-  "name": "@graph-mind/web",
+  "name": "@yokg/web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "@base-ui/react": "^1.0.0",
     "@fontsource-variable/noto-sans-sc": "^5.2.9",
     "@fontsource-variable/outfit": "^5.2.8",
-    "@graph-mind/shared": "workspace:*",
+    "@yokg/shared": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@phosphor-icons/react": "^2.1.10",
     "@t3-oss/env-core": "^0.13.10",

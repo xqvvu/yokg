@@ -221,7 +221,7 @@ const nodeColors = {
 - **Fallback**: If too complex, can use pre-built library in future refactor
 
 ### Risk: Mock Data Gets Stale
-- **Mitigation**: Define data types in `@graph-mind/shared` so mock matches future API
+- **Mitigation**: Define data types in `@yokg/shared` so mock matches future API
 - **Mitigation**: Add validation with Zod schemas
 
 ### Trade-off: SVG vs Canvas

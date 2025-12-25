@@ -1,5 +1,5 @@
 {
-  "name": "graph-mind",
+  "name": "yokg",
   "type": "module",
   "scripts": {
     "build": "turbo run build",

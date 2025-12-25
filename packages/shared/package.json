@@ -1,5 +1,5 @@
 {
-  "name": "@graph-mind/shared",
+  "name": "@yokg/shared",
   "type": "module",
   "exports": {
     "./*": "./src/*.ts"

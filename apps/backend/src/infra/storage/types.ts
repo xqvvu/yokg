@@ -62,7 +62,7 @@ export interface UploadObjectResult {
   /** 对象键 */
   key: string;
   /** ETag (对象版本标识) */
-  etag: string;
+  etag?: string;
   /** 上传完成时间 */
   uploadTime: Date;
 }

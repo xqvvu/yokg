@@ -17,7 +17,7 @@ function Overview() {
   };
 
   const handleCheckFileType = async () => {
-    const res = await ky.get("http://localhost:9001/graph-mind-public/IMG_3400.jpeg");
+    const res = await ky.get("http://localhost:9001/yokg-public/IMG_3400.jpeg");
     if (!res.body) {
       toast.error("stream is empty", {
         position: "top-center",

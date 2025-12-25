@@ -3,7 +3,7 @@ import {
   BINARY_MIME_WHITELIST,
   TEXT_CUSTOM_EXTENSION_WHITE_LIST,
   TEXT_MIME_WHITELIST,
-} from "@graph-mind/shared/lib/white-list";
+} from "@yokg/shared/lib/white-list";
 import { isNil, trimStart } from "es-toolkit";
 import type { AnyWebReadableStream, FileTypeResult } from "file-type";
 import { fileTypeFromBuffer, fileTypeFromFile, fileTypeFromStream } from "file-type";

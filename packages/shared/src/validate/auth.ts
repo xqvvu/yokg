@@ -1,5 +1,5 @@
-import type { BetterAuthResult } from "@graph-mind/shared/types/http";
-import type { IUser } from "@graph-mind/shared/validate/users";
+import type { BetterAuthResult } from "@yokg/shared/types/http";
+import type { IUser } from "@yokg/shared/validate/users";
 import { z } from "zod";
 
 export const SignUpEmailSchema = z.object({

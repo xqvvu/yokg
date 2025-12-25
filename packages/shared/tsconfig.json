@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@graph-mind/shared/*": ["src/*"]
+      "@yokg/shared/*": ["src/*"]
     },
     "outDir": "./dist",
     "rootDir": "./src"

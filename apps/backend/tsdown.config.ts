@@ -2,7 +2,7 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: ["src/main.ts"],
-  noExternal: [/^@graph-mind\//],
+  noExternal: [/^@yokg\//],
   target: "node24",
   minify: true,
 });

@@ -1,6 +1,6 @@
 import { fakerZH_CN as faker } from "@faker-js/faker";
-import { uuidv7 } from "@graph-mind/shared/lib/uuid";
-import type { IUser } from "@graph-mind/shared/validate/users";
+import { uuidv7 } from "@yokg/shared/lib/uuid";
+import type { IUser } from "@yokg/shared/validate/users";
 
 export function mockUser(): IUser {
   return {

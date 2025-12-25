@@ -1,4 +1,4 @@
-import type { IUser } from "@graph-mind/shared/validate/users";
+import type { IUser } from "@yokg/shared/validate/users";
 
 export interface IUserRepository {
   findById(id: string): Promise<IUser | null>;

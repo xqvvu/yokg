@@ -5,8 +5,10 @@ export { RustFsAdapter } from "@/infra/storage/adapters/rustfs.adapter";
 export {
   configure,
   destroyStorage,
-  getPrivateStorage,
-  getPublicStorage,
+  getBucketNames,
+  getEndpoints,
+  getStorage,
 } from "@/infra/storage/client";
 export { getStorageLogger } from "@/infra/storage/helpers";
 export type { IStorage } from "@/infra/storage/interface";
+export { StorageClient } from "@/infra/storage/storage-client";

@@ -1,5 +1,5 @@
-import { ErrorCode } from "@graph-mind/shared/lib/error-codes";
-import { uuidv7 } from "@graph-mind/shared/lib/uuid";
+import { ErrorCode } from "@yokg/shared/lib/error-codes";
+import { uuidv7 } from "@yokg/shared/lib/uuid";
 import type { Mocked } from "vitest";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mockUsers, mockUserWithId } from "#test/fixtures/users.fixture";

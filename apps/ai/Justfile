@@ -1,0 +1,12 @@
+alias d := dev
+
+default:
+    just -l
+
+[group('uv')]
+dev:
+    uv run litestar --app app.main:app run --reload
+
+@ver:
+    uv --version
+    uv python --version

@@ -1,4 +1,4 @@
-import { sessions } from "@graph-mind/shared/tables/auth";
+import { sessions } from "@yokg/shared/tables/auth";
 import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 

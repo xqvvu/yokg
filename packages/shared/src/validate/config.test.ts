@@ -1,4 +1,4 @@
-import { ConfigSchema } from "@graph-mind/shared/validate/config";
+import { ConfigSchema } from "@yokg/shared/validate/config";
 import { clone, omit } from "es-toolkit";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ZodError } from "zod";
@@ -15,10 +15,10 @@ describe("ConfigSchema", () => {
     // postgres
     POSTGRES_PORT: "5432",
     POSTGRES_HOST: "localhost",
-    POSTGRES_DB: "graph-mind",
+    POSTGRES_DB: "yokg",
     POSTGRES_USER: "postgres",
     POSTGRES_PASSWORD: "mypassword",
-    DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/graph-mind",
+    DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/yokg",
 
     // redis
     REDIS_PORT: "6379",
@@ -33,7 +33,7 @@ describe("ConfigSchema", () => {
     NEO4J_HOST: "localhost",
     NEO4J_USER: "neo4j",
     NEO4J_PASSWORD: "mypassword",
-    NEO4J_DATABASE: "graph-mind",
+    NEO4J_DATABASE: "yokg",
     NEO4J_MAX_CONNECTION_POOL_SIZE: "50",
     NEO4J_CONNECTION_TIMEOUT: "30000",
     NEO4J_URI: "neo4j://localhost:7687",
@@ -456,7 +456,7 @@ describe("ConfigSchema", () => {
     it("should apply default POSTGRES_DB when missing", () => {
       processEnv = omit(processEnv, ["POSTGRES_DB"]);
       const result = ConfigSchema.parse(processEnv);
-      expect(result.POSTGRES_DB).toBe("graph-mind");
+      expect(result.POSTGRES_DB).toBe("yokg");
     });
 
     it("should apply default POSTGRES_USER when missing", () => {
@@ -554,7 +554,7 @@ describe("ConfigSchema", () => {
     it("should apply default NEO4J_DATABASE when missing", () => {
       processEnv = omit(processEnv, ["NEO4J_DATABASE"]);
       const result = ConfigSchema.parse(processEnv);
-      expect(result.NEO4J_DATABASE).toBe("graph-mind");
+      expect(result.NEO4J_DATABASE).toBe("yokg");
     });
 
     it("should apply default NEO4J_MAX_CONNECTION_POOL_SIZE when missing", () => {
@@ -716,10 +716,10 @@ describe("ConfigSchema", () => {
         // postgres
         POSTGRES_PORT: 5432,
         POSTGRES_HOST: "localhost",
-        POSTGRES_DB: "graph-mind",
+        POSTGRES_DB: "yokg",
         POSTGRES_USER: "postgres",
         POSTGRES_PASSWORD: "mypassword",
-        DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/graph-mind",
+        DATABASE_URL: "postgres://postgres:mypassword@localhost:5432/yokg",
 
         // redis
         REDIS_PORT: 6379,
@@ -734,7 +734,7 @@ describe("ConfigSchema", () => {
         NEO4J_HOST: "localhost",
         NEO4J_USER: "neo4j",
         NEO4J_PASSWORD: "mypassword",
-        NEO4J_DATABASE: "graph-mind",
+        NEO4J_DATABASE: "yokg",
         NEO4J_MAX_CONNECTION_POOL_SIZE: 50,
         NEO4J_CONNECTION_TIMEOUT: 30000,
         NEO4J_URI: "neo4j://localhost:7687",
@@ -790,7 +790,7 @@ describe("ConfigSchema", () => {
       expect(result.CORS_ALLOWED_ORIGINS).toEqual([]);
       expect(result.POSTGRES_PORT).toBe(5432);
       expect(result.POSTGRES_HOST).toBe("localhost");
-      expect(result.POSTGRES_DB).toBe("graph-mind");
+      expect(result.POSTGRES_DB).toBe("yokg");
       expect(result.POSTGRES_USER).toBe("postgres");
       expect(result.REDIS_PORT).toBe(6379);
       expect(result.REDIS_HOST).toBe("localhost");
@@ -799,7 +799,7 @@ describe("ConfigSchema", () => {
       expect(result.NEO4J_BOLT_PORT).toBe(7687);
       expect(result.NEO4J_HOST).toBe("localhost");
       expect(result.NEO4J_USER).toBe("neo4j");
-      expect(result.NEO4J_DATABASE).toBe("graph-mind");
+      expect(result.NEO4J_DATABASE).toBe("yokg");
       expect(result.NEO4J_MAX_CONNECTION_POOL_SIZE).toBe(50);
       expect(result.NEO4J_CONNECTION_TIMEOUT).toBe(30000);
       expect(result.S3_VENDOR).toBe("rustfs");

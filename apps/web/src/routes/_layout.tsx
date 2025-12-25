@@ -30,7 +30,7 @@ function Layout() {
             <Separator orientation="vertical" />
 
             <Avatar className="size-7.5">
-              <AvatarImage src="http://localhost:9001/graph-mind-public/IMG_3400.jpeg" />
+              <AvatarImage src="http://localhost:9001/yokg-public/IMG_3400.jpeg" />
               <AvatarFallback>{"xqvvu".slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
